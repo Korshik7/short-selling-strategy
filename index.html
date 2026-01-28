@@ -962,6 +962,231 @@ BANANAS31:
             </div>
         </div>
 
+        <!-- ==================== ADDITIONAL BACKTEST: DEXE ==================== -->
+
+        <div class="divider page-break"></div>
+        <h2>Additional Backtest: DEXE (HH Only Mode)</h2>
+
+        <div class="section">
+            <h3>Backtest Overview</h3>
+            <p>6-month backtest on DEXE token using HH Only mode with 7% pump detection threshold.</p>
+
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Period</td>
+                    <td>Aug 2025 - Jan 2026 (6 months)</td>
+                </tr>
+                <tr>
+                    <td>Data</td>
+                    <td>4,337 candles (1H timeframe)</td>
+                </tr>
+                <tr>
+                    <td>Price Range</td>
+                    <td>$0.136 - $13.63</td>
+                </tr>
+                <tr>
+                    <td>Pump Detection</td>
+                    <td>7% in 12 hours</td>
+                </tr>
+                <tr>
+                    <td>HH Lookback</td>
+                    <td>45 days (1080 candles)</td>
+                </tr>
+                <tr>
+                    <td>Range Lookback</td>
+                    <td>14 days</td>
+                </tr>
+                <tr>
+                    <td>Exit Strategy</td>
+                    <td>60% retracement</td>
+                </tr>
+            </table>
+
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-value">21</div>
+                    <div class="stat-label">Total Trades</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value green">100%</div>
+                    <div class="stat-label">Win Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value green">$9,770</div>
+                    <div class="stat-label">Total PnL</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value green">97.7%</div>
+                    <div class="stat-label">ROI</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Pump Event Breakdown</h3>
+            <p>Out of 964 pump events detected (7%+ in 12h), the strategy participated in a fraction based on filters:</p>
+
+            <table>
+                <tr>
+                    <th>Category</th>
+                    <th>Count</th>
+                    <th>Percentage</th>
+                </tr>
+                <tr>
+                    <td>Total Pump Events</td>
+                    <td>964</td>
+                    <td>100%</td>
+                </tr>
+                <tr>
+                    <td class="green">Participated (found HH)</td>
+                    <td class="green">366</td>
+                    <td class="green">38.0%</td>
+                </tr>
+                <tr>
+                    <td>Skipped (protection active)</td>
+                    <td>25</td>
+                    <td>2.6%</td>
+                </tr>
+                <tr>
+                    <td>Skipped (price zone &lt;50%)</td>
+                    <td>570</td>
+                    <td>59.1%</td>
+                </tr>
+                <tr>
+                    <td>Skipped (no valid HH)</td>
+                    <td>28</td>
+                    <td>2.9%</td>
+                </tr>
+            </table>
+
+            <div class="highlight">
+                <strong>Key Insight:</strong> Price zone filter (&lt;50% of range) is the most restrictive, filtering out 59% of pump events. This ensures entries only happen when price is already in the upper half of the recent range.
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Flash Crash Protection Events</h3>
+            <p>Flash crash protection (30%+ drop in 12h) triggered 14 times, pausing new entries for 12 hours each time.</p>
+
+            <div class="highlight">
+                <strong>October 10-11, 2025:</strong> Protection triggered 11 consecutive times between Oct 10 21:00 and Oct 11 10:00. Price volatility between $5.19 and $6.59 caused continuous 30%+ swings, keeping the system in protection mode.
+            </div>
+
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Time</th>
+                    <th>Price</th>
+                    <th>Paused Until</th>
+                </tr>
+                <tr>
+                    <td>2025-10-10</td>
+                    <td>21:00</td>
+                    <td>$5.55</td>
+                    <td>09:00</td>
+                </tr>
+                <tr>
+                    <td>2025-10-11</td>
+                    <td>00:00</td>
+                    <td>$5.74</td>
+                    <td>12:00</td>
+                </tr>
+                <tr>
+                    <td>2025-10-11</td>
+                    <td>04:00</td>
+                    <td>$6.48</td>
+                    <td>16:00</td>
+                </tr>
+                <tr>
+                    <td>2025-10-11</td>
+                    <td>10:00</td>
+                    <td>$6.25</td>
+                    <td>22:00</td>
+                </tr>
+            </table>
+            <p style="color: #8b949e; font-size: 12px;">* Showing selected events. Total protection triggers on Oct 11-12: 11</p>
+        </div>
+
+        <div class="section">
+            <h3>Drawdown Analysis</h3>
+
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-value red">-$11,855</div>
+                    <div class="stat-label">Max Drawdown</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">-$60</div>
+                    <div class="stat-label">Median Drawdown</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">-$968</div>
+                    <div class="stat-label">Mean Drawdown</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value red">-$7,511</div>
+                    <div class="stat-label">Max DD (excl. Sep 21)</div>
+                </div>
+            </div>
+
+            <h4>Top 5 Worst Drawdown Moments</h4>
+            <table>
+                <tr>
+                    <th>Date & Time</th>
+                    <th>Drawdown</th>
+                    <th>Open Positions</th>
+                </tr>
+                <tr>
+                    <td>2025-09-21 07:00</td>
+                    <td class="red">-$11,855</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td>2025-09-21 03:00</td>
+                    <td class="red">-$10,042</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td>2025-09-21 06:00</td>
+                    <td class="red">-$9,943</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <td>2025-09-21 08:00</td>
+                    <td class="red">-$9,684</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <td>2025-09-21 05:00</td>
+                    <td class="red">-$9,262</td>
+                    <td>6</td>
+                </tr>
+            </table>
+
+            <div class="warning">
+                <strong>Warning:</strong> September 21, 2025 saw an extreme pump pushing DEXE to $12.68. With 6-7 positions open simultaneously, unrealized loss exceeded the $10,000 budget. However, all positions eventually closed in profit after price retraced.
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Holding Time Statistics</h3>
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-value">108h</div>
+                    <div class="stat-label">Avg Holding Time</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">19h</div>
+                    <div class="stat-label">Median Holding Time</div>
+                </div>
+            </div>
+            <p style="color: #8b949e; font-size: 13px;">Note: Average is skewed by a few long trades. Median of 19 hours is more representative of typical trade duration.</p>
+        </div>
+
         <!-- ==================== SUMMARY ==================== -->
 
         <div class="divider page-break"></div>

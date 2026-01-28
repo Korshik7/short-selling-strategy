@@ -1221,77 +1221,96 @@ BANANAS31:
         <!-- ==================== MULTI-TOKEN BACKTEST ==================== -->
 
         <div class="divider page-break"></div>
-        <h2>Multi-Token Backtest: BANANAS31 & ERA</h2>
+        <h2>Multi-Token Backtest: DEXE, BANANAS31, ERA, FLOKI</h2>
 
         <div class="section">
-            <h3>Results Comparison (6 months, Realistic Capital)</h3>
-            <p>Same strategy parameters applied to three different tokens:</p>
+            <h3>Results Comparison (Realistic Capital)</h3>
+            <p>Same strategy parameters applied to four different tokens:</p>
 
             <table>
                 <tr>
                     <th>Token</th>
+                    <th>Period</th>
                     <th>Trades</th>
                     <th>Win Rate</th>
                     <th>PnL</th>
-                    <th>ROI</th>
+                    <th>PnL/Mo</th>
                     <th>Max DD</th>
                     <th>DD/PnL</th>
                 </tr>
                 <tr>
                     <td>DEXE</td>
+                    <td>6 mo</td>
                     <td>30</td>
                     <td class="green">100%</td>
                     <td class="green">$6,734</td>
-                    <td>67.3%</td>
+                    <td>$1,122</td>
                     <td class="red">-$7,775</td>
                     <td>115%</td>
                 </tr>
                 <tr>
                     <td>BANANAS31</td>
+                    <td>6 mo</td>
                     <td>44</td>
                     <td class="green">98%</td>
                     <td class="green">$3,925</td>
-                    <td>39.2%</td>
+                    <td>$654</td>
                     <td>-$2,216</td>
                     <td class="green">56%</td>
                 </tr>
                 <tr>
                     <td>ERA</td>
+                    <td>6 mo</td>
                     <td>32</td>
                     <td class="green">100%</td>
                     <td class="green">$3,425</td>
-                    <td>34.3%</td>
+                    <td>$571</td>
                     <td>-$798</td>
                     <td class="green">23%</td>
                 </tr>
+                <tr>
+                    <td>FLOKI</td>
+                    <td>4 mo</td>
+                    <td>31</td>
+                    <td class="green">100%</td>
+                    <td class="green">$1,826</td>
+                    <td>$456</td>
+                    <td>-$3,418</td>
+                    <td class="red">187%</td>
+                </tr>
                 <tr style="font-weight: bold; background: #1a1a2e;">
                     <td>AVERAGE</td>
-                    <td>35</td>
-                    <td class="green">99%</td>
-                    <td class="green">$4,695</td>
-                    <td>46.9%</td>
-                    <td>-$3,596</td>
-                    <td>65%</td>
+                    <td>-</td>
+                    <td>34</td>
+                    <td class="green">99.5%</td>
+                    <td class="green">$3,978</td>
+                    <td>$701</td>
+                    <td>-$3,552</td>
+                    <td>95%</td>
                 </tr>
             </table>
 
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value green">$782</div>
+                    <div class="stat-value green">$701</div>
                     <div class="stat-label">Avg PnL/Month/Token</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">99%</div>
+                    <div class="stat-value green">99.5%</div>
                     <div class="stat-label">Avg Win Rate</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">0.33</div>
-                    <div class="stat-label">Capital Refreshes (avg)</div>
+                    <div class="stat-value">137</div>
+                    <div class="stat-label">Total Trades (4 токена)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">65%</div>
+                    <div class="stat-value">95%</div>
                     <div class="stat-label">Avg DD/PnL Ratio</div>
                 </div>
+            </div>
+
+            <div class="warning" style="margin-top: 15px;">
+                <strong>FLOKI Note:</strong> FLOKI показал наихудший DD/PnL ratio (187%) из-за высокой волатильности. При этом стратегия сохранила 100% win rate - все позиции закрылись в плюс после просадки.
             </div>
         </div>
 
@@ -1364,31 +1383,31 @@ BANANAS31:
             <h3>HH Only Mode - Realistic Capital (рекомендуемый)</h3>
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value">106</div>
-                    <div class="stat-label">Total Trades (3 токена)</div>
+                    <div class="stat-value">137</div>
+                    <div class="stat-label">Total Trades (4 токена)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">99%</div>
+                    <div class="stat-value green">99.5%</div>
                     <div class="stat-label">Win Rate</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">$14,084</div>
+                    <div class="stat-value green">$15,910</div>
                     <div class="stat-label">Total PnL</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">$782</div>
+                    <div class="stat-value green">$701</div>
                     <div class="stat-label">Avg PnL/Month/Token</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">-$3,596</div>
+                    <div class="stat-value">-$3,552</div>
                     <div class="stat-label">Avg Max Drawdown</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">65%</div>
+                    <div class="stat-value">95%</div>
                     <div class="stat-label">Avg DD/PnL Ratio</div>
                 </div>
             </div>
-            <p style="color: #3fb950; font-size: 12px;">Realistic Capital: $10k лимит, $5k на ситуацию, refresh через 4 дня. HH Lookback 45 дней, proximity 6%. Тройная защита эффективно блокирует входы при экстремальной волатильности.</p>
+            <p style="color: #3fb950; font-size: 12px;">Realistic Capital: $10k лимит, $5k на ситуацию, refresh через 4 дня. HH Lookback 45 дней, proximity 6%. Тестировано на 4 токенах (DEXE, BANANAS31, ERA, FLOKI). Тройная защита блокирует входы при экстремальной волатильности.</p>
         </div>
 
         <div class="section">

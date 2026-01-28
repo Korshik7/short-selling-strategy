@@ -1223,6 +1223,143 @@ BANANAS31:
             </div>
         </div>
 
+        <!-- ==================== MULTI-TOKEN BACKTEST ==================== -->
+
+        <div class="divider page-break"></div>
+        <h2>Multi-Token Backtest: BANANAS31 & ERA</h2>
+
+        <div class="section">
+            <h3>Results Comparison (6 months, Realistic Capital)</h3>
+            <p>Same strategy parameters applied to three different tokens:</p>
+
+            <table>
+                <tr>
+                    <th>Token</th>
+                    <th>Trades</th>
+                    <th>Win Rate</th>
+                    <th>PnL</th>
+                    <th>ROI</th>
+                    <th>Max DD</th>
+                    <th>DD/PnL</th>
+                </tr>
+                <tr>
+                    <td>DEXE</td>
+                    <td>30</td>
+                    <td class="green">100%</td>
+                    <td class="green">$6,734</td>
+                    <td>67.3%</td>
+                    <td class="red">-$7,775</td>
+                    <td>115%</td>
+                </tr>
+                <tr>
+                    <td>BANANAS31</td>
+                    <td>44</td>
+                    <td class="green">98%</td>
+                    <td class="green">$3,925</td>
+                    <td>39.2%</td>
+                    <td>-$2,216</td>
+                    <td class="green">56%</td>
+                </tr>
+                <tr>
+                    <td>ERA</td>
+                    <td>32</td>
+                    <td class="green">100%</td>
+                    <td class="green">$3,425</td>
+                    <td>34.3%</td>
+                    <td>-$798</td>
+                    <td class="green">23%</td>
+                </tr>
+                <tr style="font-weight: bold; background: #1a1a2e;">
+                    <td>AVERAGE</td>
+                    <td>35</td>
+                    <td class="green">99%</td>
+                    <td class="green">$4,695</td>
+                    <td>46.9%</td>
+                    <td>-$3,596</td>
+                    <td>65%</td>
+                </tr>
+            </table>
+
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-value green">$782</div>
+                    <div class="stat-label">Avg PnL/Month/Token</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value green">99%</div>
+                    <div class="stat-label">Avg Win Rate</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">0.33</div>
+                    <div class="stat-label">Capital Refreshes (avg)</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">65%</div>
+                    <div class="stat-label">Avg DD/PnL Ratio</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Protection Analysis: BANANAS31 Nov 16-17</h3>
+            <p>BANANAS31 experienced a <strong>92% pump</strong> on November 16-17 ($0.002 -> $0.006), yet max drawdown remained only -$2,216. Here's why:</p>
+
+            <table>
+                <tr>
+                    <th>Time</th>
+                    <th>Filter</th>
+                    <th>Result</th>
+                </tr>
+                <tr>
+                    <td>Nov 16 16:00</td>
+                    <td>Price Zone 33%</td>
+                    <td class="red">BLOCKED (need >50%)</td>
+                </tr>
+                <tr>
+                    <td>Nov 16 17:00</td>
+                    <td>HH Breach Check</td>
+                    <td class="red">BLOCKED (all HH already breached)</td>
+                </tr>
+                <tr>
+                    <td>Nov 16 18:00</td>
+                    <td>HH Breach Check</td>
+                    <td class="red">BLOCKED (all HH already breached)</td>
+                </tr>
+                <tr>
+                    <td>Nov 16 19:00+</td>
+                    <td>Flash Crash 30%</td>
+                    <td class="red">PROTECTION (extreme volatility)</td>
+                </tr>
+            </table>
+
+            <div class="highlight">
+                <strong>Three-Layer Protection:</strong>
+                <ol style="margin: 10px 0 0 20px; padding: 0;">
+                    <li><strong>Price Zone Filter (<50%)</strong> - blocked entry at pump start</li>
+                    <li><strong>HH Breach Filter</strong> - old resistance levels already broken, no valid entries</li>
+                    <li><strong>Flash Crash Protection</strong> - 30%+ volatility paused all entries for 12h+</li>
+                </ol>
+            </div>
+
+            <p style="margin-top: 15px;">Similarly, the October 10 flash crash (5135% move, $0.0001 -> $0.0045) triggered protection events that blocked entries during the extreme volatility.</p>
+        </div>
+
+        <div class="section">
+            <h3>Why DEXE Had Higher Drawdown</h3>
+            <p>On September 21, DEXE pumped to $12.68. Unlike BANANAS31's November pump:</p>
+
+            <div class="warning">
+                <ul style="margin: 0; padding-left: 20px;">
+                    <li>HH levels were <strong>not yet breached</strong> before the pump</li>
+                    <li>Strategy entered valid short positions at resistance</li>
+                    <li>Positions went underwater during pump (unrealized -$7,775)</li>
+                    <li>All positions eventually closed in profit after retracement</li>
+                </ul>
+            </div>
+
+            <p style="margin-top: 15px; color: #8b949e;">This demonstrates the strategy works correctly: it enters at valid resistance, holds through temporary drawdown, and exits in profit. The protection filters prevent entries during invalid conditions (broken levels, extreme volatility).</p>
+        </div>
+
         <!-- ==================== SUMMARY ==================== -->
 
         <div class="divider page-break"></div>

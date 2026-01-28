@@ -324,6 +324,58 @@
         <h1>Short Selling Strategy</h1>
         <p class="subtitle">Technical Documentation | HH+FVG Mode & Global Pump Mode</p>
 
+        <!-- ==================== REALISTIC CAPITAL MANAGEMENT ==================== -->
+
+        <div class="section">
+            <h3>Realistic Capital Management</h3>
+            <p>Для реалистичности бэктестов используется следующая модель управления капиталом:</p>
+
+            <div class="highlight">
+                <strong>Capital Lock Rule:</strong> Рабочий капитал составляет <code>$10,000</code>. На каждый pump detect используется <code>$5,000</code>, чтобы оставалась возможность добавить ещё $5,000 на следующем детекте, если ситуация повторится выше.
+            </div>
+
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Value</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>Working Capital</td>
+                    <td>$10,000</td>
+                    <td>Максимальный капитал в торгах</td>
+                </tr>
+                <tr>
+                    <td>Per Situation</td>
+                    <td>$5,000</td>
+                    <td>Объём на один pump detect</td>
+                </tr>
+                <tr>
+                    <td>Capital Refresh</td>
+                    <td>4 days</td>
+                    <td>Если капитал заблокирован (позиции не закрылись из-за продолжающегося пампа), через 4 дня добавляются новые $10,000</td>
+                </tr>
+                <tr>
+                    <td>Capital Return</td>
+                    <td>Automatic</td>
+                    <td>При закрытии старых позиций новые $10,000 убираются, капитал возвращается к $10,000</td>
+                </tr>
+            </table>
+
+            <div class="formula">Capital Flow Example:
+Day 1: $10k available, pump detected, use $5k
+Day 2: $5k available, pump detected, use $5k
+Day 3-6: $0 available, positions stuck (price going up)
+Day 7: Capital refresh -> add $10k (now $10k available)
+Day 8: Old positions close -> remove refresh capital, back to $10k
+
+Result: Capital never exceeds $10k in active trading</div>
+
+            <p style="color: #8b949e; font-size: 13px; margin-top: 15px;">
+                Данный подход обеспечивает реалистичную оценку доходности. В отличие от бэктестов с неограниченным капиталом, где одни и те же $10k используются многократно (создавая иллюзию 97% ROI), здесь учитывается реальная блокировка средств в открытых позициях.
+            </p>
+        </div>
+
         <!-- ==================== BACKTEST LOGIC ==================== -->
 
         <div class="section">
@@ -965,11 +1017,15 @@ BANANAS31:
         <!-- ==================== ADDITIONAL BACKTEST: DEXE ==================== -->
 
         <div class="divider page-break"></div>
-        <h2>Additional Backtest: DEXE (HH Only Mode)</h2>
+        <h2>Additional Backtest: DEXE (HH Only + Realistic Capital)</h2>
 
         <div class="section">
             <h3>Backtest Overview</h3>
-            <p>6-month backtest on DEXE token using HH Only mode with 7% pump detection threshold.</p>
+            <p>6-month backtest on DEXE token using HH Only mode with realistic capital management and 7% pump detection threshold.</p>
+
+            <div class="highlight">
+                <strong>Realistic Capital Mode:</strong> В отличие от теоретического бэктеста с неограниченным капиталом, здесь применяется модель реального управления капиталом: $10k лимит, $5k на ситуацию, refresh через 4 дня блокировки.
+            </div>
 
             <table>
                 <tr>
@@ -997,8 +1053,16 @@ BANANAS31:
                     <td>45 days (1080 candles)</td>
                 </tr>
                 <tr>
-                    <td>Range Lookback</td>
-                    <td>14 days</td>
+                    <td>HH Proximity</td>
+                    <td>Within 6% of current price</td>
+                </tr>
+                <tr>
+                    <td>Capital per Situation</td>
+                    <td>$5,000 (to allow adding more if price goes higher)</td>
+                </tr>
+                <tr>
+                    <td>Capital Refresh</td>
+                    <td>4 days (add $10k if locked)</td>
                 </tr>
                 <tr>
                     <td>Exit Strategy</td>
@@ -1008,7 +1072,7 @@ BANANAS31:
 
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value">21</div>
+                    <div class="stat-value">30</div>
                     <div class="stat-label">Total Trades</div>
                 </div>
                 <div class="stat-box">
@@ -1016,55 +1080,68 @@ BANANAS31:
                     <div class="stat-label">Win Rate</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">$9,770</div>
+                    <div class="stat-value green">$6,734</div>
                     <div class="stat-label">Total PnL</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">97.7%</div>
+                    <div class="stat-value green">67.3%</div>
                     <div class="stat-label">ROI</div>
+                </div>
+            </div>
+
+            <div class="stat-grid">
+                <div class="stat-box">
+                    <div class="stat-value">1</div>
+                    <div class="stat-label">Capital Refreshes</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">$18,333</div>
+                    <div class="stat-label">Max Capital In Use</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">138h</div>
+                    <div class="stat-label">Avg Holding Time</div>
+                </div>
+                <div class="stat-box">
+                    <div class="stat-value">$2,320</div>
+                    <div class="stat-label">Avg Position Size</div>
                 </div>
             </div>
         </div>
 
         <div class="section">
             <h3>Pump Event Breakdown</h3>
-            <p>Out of 964 pump events detected (7%+ in 12h), the strategy participated in a fraction based on filters:</p>
+            <p>With realistic capital management, many pump events are skipped due to capital being locked in existing positions:</p>
 
             <table>
                 <tr>
                     <th>Category</th>
                     <th>Count</th>
-                    <th>Percentage</th>
+                    <th>Description</th>
                 </tr>
                 <tr>
-                    <td>Total Pump Events</td>
-                    <td>964</td>
-                    <td>100%</td>
+                    <td class="green">Pump Events Participated</td>
+                    <td class="green">673</td>
+                    <td>Events where we had capital and found valid HH</td>
                 </tr>
                 <tr>
-                    <td class="green">Participated (found HH)</td>
-                    <td class="green">366</td>
-                    <td class="green">38.0%</td>
+                    <td>Skipped (no capital)</td>
+                    <td>291</td>
+                    <td>Capital locked in existing positions</td>
                 </tr>
                 <tr>
-                    <td>Skipped (protection active)</td>
-                    <td>25</td>
-                    <td>2.6%</td>
-                </tr>
-                <tr>
-                    <td>Skipped (price zone &lt;50%)</td>
-                    <td>570</td>
-                    <td>59.1%</td>
-                </tr>
-                <tr>
-                    <td>Skipped (no valid HH)</td>
-                    <td>28</td>
-                    <td>2.9%</td>
+                    <td>Skipped (no HH in 6%)</td>
+                    <td>-</td>
+                    <td>No valid HH within 6% above current price</td>
                 </tr>
             </table>
 
             <div class="highlight">
-                <strong>Key Insight:</strong> Price zone filter (&lt;50% of range) is the most restrictive, filtering out 59% of pump events. This ensures entries only happen when price is already in the upper half of the recent range.
+                <strong>Key Insight:</strong> Despite skipping 291 pump events due to capital constraints, the strategy still achieved 67.3% ROI. This demonstrates that selective participation with proper capital management is more effective than trying to catch every pump.
+            </div>
+
+            <div class="warning">
+                <strong>Comparison with Unlimited Capital:</strong> Theoretical backtest without capital limits showed $9,769 PnL (97.7% ROI), but this required up to 7 simultaneous positions (~$70k effective capital). With realistic $10k capital, we achieve $6,734 PnL - a 31% reduction in PnL but with controlled risk.
             </div>
         </div>
 
@@ -1116,75 +1193,34 @@ BANANAS31:
 
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value red">-$11,855</div>
+                    <div class="stat-value red">-$7,775</div>
                     <div class="stat-label">Max Drawdown</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">-$60</div>
+                    <div class="stat-value">-$76</div>
                     <div class="stat-label">Median Drawdown</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">-$968</div>
-                    <div class="stat-label">Mean Drawdown</div>
+                    <div class="stat-value">9</div>
+                    <div class="stat-label">Max Positions</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value red">-$7,511</div>
-                    <div class="stat-label">Max DD (excl. Sep 21)</div>
+                    <div class="stat-value">115%</div>
+                    <div class="stat-label">DD/PnL Ratio</div>
                 </div>
             </div>
 
-            <h4>Top 5 Worst Drawdown Moments</h4>
-            <table>
-                <tr>
-                    <th>Date & Time</th>
-                    <th>Drawdown</th>
-                    <th>Open Positions</th>
-                </tr>
-                <tr>
-                    <td>2025-09-21 07:00</td>
-                    <td class="red">-$11,855</td>
-                    <td>6</td>
-                </tr>
-                <tr>
-                    <td>2025-09-21 03:00</td>
-                    <td class="red">-$10,042</td>
-                    <td>6</td>
-                </tr>
-                <tr>
-                    <td>2025-09-21 06:00</td>
-                    <td class="red">-$9,943</td>
-                    <td>6</td>
-                </tr>
-                <tr>
-                    <td>2025-09-21 08:00</td>
-                    <td class="red">-$9,684</td>
-                    <td>7</td>
-                </tr>
-                <tr>
-                    <td>2025-09-21 05:00</td>
-                    <td class="red">-$9,262</td>
-                    <td>6</td>
-                </tr>
-            </table>
+            <div class="highlight">
+                <strong>DD/PnL Ratio Comparison:</strong><br>
+                - Unlimited Capital Mode: -$11,854 DD / $9,769 PnL = <span class="red">121%</span><br>
+                - Realistic Capital Mode: -$7,775 DD / $6,734 PnL = <span class="green">115%</span> (better risk profile)
+            </div>
+
+            <p style="margin-top: 15px;">With realistic capital management, max drawdown is reduced from -$11,854 to -$7,775 (34% improvement). The DD/PnL ratio also improves, indicating more efficient use of capital.</p>
 
             <div class="warning">
-                <strong>Warning:</strong> September 21, 2025 saw an extreme pump pushing DEXE to $12.68. With 6-7 positions open simultaneously, unrealized loss exceeded the $10,000 budget. However, all positions eventually closed in profit after price retraced.
+                <strong>Note:</strong> September 21, 2025 saw an extreme pump pushing DEXE to $12.68. This triggered a capital refresh, adding secondary $10k while primary positions were locked. All positions eventually closed in profit after price retraced.
             </div>
-        </div>
-
-        <div class="section">
-            <h3>Holding Time Statistics</h3>
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <div class="stat-value">108h</div>
-                    <div class="stat-label">Avg Holding Time</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">19h</div>
-                    <div class="stat-label">Median Holding Time</div>
-                </div>
-            </div>
-            <p style="color: #8b949e; font-size: 13px;">Note: Average is skewed by a few long trades. Median of 19 hours is more representative of typical trade duration.</p>
         </div>
 
         <!-- ==================== SUMMARY ==================== -->

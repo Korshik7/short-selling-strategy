@@ -397,7 +397,7 @@ Result: Capital never exceeds $10k in active trading</div>
                 </tr>
                 <tr>
                     <td>Tokens</td>
-                    <td>ERA/USDT, BANANAS31/USDT</td>
+                    <td>DEXE/USDT, ERA/USDT, BANANAS31/USDT</td>
                 </tr>
                 <tr>
                     <td>Period</td>
@@ -470,11 +470,12 @@ Zones:
                 <div>
                     <h4><span class="badge hh">HH</span> Higher High Detection</h4>
                     <div class="formula">Logic:
-1. Lookback: 336 candles (14 days on 1H)
+1. Lookback: 1080 candles (45 days on 1H)
 2. Pattern: high[i] > high[i±1] AND high[i] > high[i±2]
-3. Position filter: HH must be > 75% of weekly range
-4. Validation: цена не касалась этого уровня после формирования HH (если коснулась - HH инвалидирован, ликвидность снята)
-5. Order expiry: 48 hours, затем ордер удаляется. Появляется снова при следующем Pump Detect (10%+)</div>
+3. Position filter: HH must be > 50% of 14-day range
+4. Proximity filter: HH must be within 6% above current price
+5. Validation: цена не касалась этого уровня после формирования HH (если коснулась - HH инвалидирован, ликвидность снята)
+6. Order expiry: 48 hours, затем ордер удаляется</div>
                 </div>
 
                 <div>
@@ -494,8 +495,8 @@ Zones:
             <div class="formula">Logic:
 1. Lookback window: 12 candles (12 hours on 1H)
 2. Calculate: pump_pct = (window_high - window_low) / window_low
-3. Trigger condition: pump_pct >= 10%
-4. Action: scan for HH/FVG zones and place/refresh limit orders</div>
+3. Trigger condition: pump_pct >= 7%
+4. Action: scan for HH within 6% above current price, place limit orders</div>
         </div>
 
         <div class="section">
@@ -547,7 +548,11 @@ Example with $10,000 budget and 3 HH levels:
 
         <!-- HH+FVG RESULTS -->
         <div class="section page-break">
-            <h3>Backtest Results: HH+FVG Mode</h3>
+            <h3>Backtest Results: HH+FVG Mode (Unlimited Capital)</h3>
+
+            <div class="warning">
+                <strong>Режим Unlimited Capital:</strong> Эти результаты показывают потенциал стратегии без ограничений капитала. Одни и те же $10k используются многократно. Для реалистичных результатов см. раздел <strong>"Multi-Token Backtest"</strong> ниже.
+            </div>
 
             <div class="stat-grid">
                 <div class="stat-box">
@@ -564,11 +569,11 @@ Example with $10,000 budget and 3 HH levels:
                 </div>
                 <div class="stat-box">
                     <div class="stat-value">147.8%</div>
-                    <div class="stat-label">ROI ($10k budget)</div>
+                    <div class="stat-label">ROI (теоретич.)</div>
                 </div>
             </div>
 
-            <h4>Results by Token</h4>
+            <h4>Results by Token (Unlimited Capital)</h4>
             <table>
                 <tr>
                     <th>Token</th>
@@ -597,17 +602,7 @@ Example with $10,000 budget and 3 HH levels:
             </table>
 
             <div class="warning" style="margin-top: 15px;">
-                <strong>* BANANAS31 Max Drawdown Calculation:</strong><br><br>
-                Аномальный памп +162% (16-17 ноября 2025) привёл к экстремальному unrealized drawdown:<br><br>
-                <code style="display: block; margin: 10px 0; padding: 10px;">
-Entry price: ~$0.0025 (HH levels в верхней зоне weekly range)<br>
-Peak price: $0.0064 (+156% от входа)<br>
-Position size: $10,000 → 4,000,000 tokens<br>
-<br>
-Unrealized Loss = (0.0064 - 0.0025) × 4,000,000 = <span class="red">-$15,600</span>
-                </code>
-                <strong>Важно:</strong> Предсказать аномальные пампы невозможно. Однако алгоритм <strong>Global Pump Mode</strong> предназначен для нивелирования такого дроудауна - он входит с бóльшей позицией и на значительно более высоких уровнях цены.<br><br>
-                <strong>Логика:</strong> Если исторически каждый памп откатывается, то локальный дроудаун во время экстремального движения - это нормальная и неизбежная часть системы. Медианный дроудаун -$110 более репрезентативен для типичных условий.
+                <strong>* BANANAS31 Max Drawdown (Unlimited Mode):</strong> Без ограничений капитала стратегия вошла в позиции на пампе Nov 16-17 и получила unrealized DD -$15,600. <strong>В режиме Realistic Capital</strong> (см. ниже) тройная защита (price zone, HH breach, flash crash) <strong>заблокировала эти входы</strong>, и max DD составил только -$2,216.
             </div>
 
             <h4>Results by Entry Type</h4>
@@ -1366,34 +1361,34 @@ BANANAS31:
         <h2>Summary Statistics</h2>
 
         <div class="section">
-            <h3>HH+FVG Mode</h3>
+            <h3>HH Only Mode - Realistic Capital (рекомендуемый)</h3>
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value">100</div>
-                    <div class="stat-label">Total Trades</div>
+                    <div class="stat-value">106</div>
+                    <div class="stat-label">Total Trades (3 токена)</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-value green">99%</div>
                     <div class="stat-label">Win Rate</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">$14,784</div>
+                    <div class="stat-value green">$14,084</div>
                     <div class="stat-label">Total PnL</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value red">-$15,600</div>
-                    <div class="stat-label">Max Drawdown *</div>
+                    <div class="stat-value green">$782</div>
+                    <div class="stat-label">Avg PnL/Month/Token</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">-$145</div>
-                    <div class="stat-label">Median Drawdown</div>
+                    <div class="stat-value">-$3,596</div>
+                    <div class="stat-label">Avg Max Drawdown</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">11.6h</div>
-                    <div class="stat-label">Avg Holding Time</div>
+                    <div class="stat-value green">65%</div>
+                    <div class="stat-label">Avg DD/PnL Ratio</div>
                 </div>
             </div>
-            <p style="color: #f85149; font-size: 12px;">* Max Drawdown -$15,600 вызван аномальным пампом BANANAS31 +162% (Nov 16-17). При таком пампе unrealized loss на $10k позиции достигает 156%. Медианный дроудаун -$145 более репрезентативен для типичных условий.</p>
+            <p style="color: #3fb950; font-size: 12px;">Realistic Capital: $10k лимит, $5k на ситуацию, refresh через 4 дня. HH Lookback 45 дней, proximity 6%. Тройная защита эффективно блокирует входы при экстремальной волатильности.</p>
         </div>
 
         <div class="section">

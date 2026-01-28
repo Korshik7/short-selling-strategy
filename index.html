@@ -122,22 +122,22 @@
 
         .chart-container {
             width: 100%;
-            height: 420px;
+            height: 450px;
             background: #0d1117;
             border: 1px solid #30363d;
             border-radius: 8px;
             margin: 20px 0;
-            padding-bottom: 25px;
+            overflow: visible;
         }
 
         .chart-container-tall {
             width: 100%;
-            height: 520px;
+            height: 550px;
             background: #0d1117;
             border: 1px solid #30363d;
             border-radius: 8px;
             margin: 20px 0;
-            padding-bottom: 25px;
+            overflow: visible;
         }
 
         .legend {
@@ -239,15 +239,15 @@
             }
 
             .chart-container {
-                height: 350px;
-                padding-bottom: 25px;
+                height: 380px;
                 page-break-inside: avoid;
+                overflow: visible;
             }
 
             .chart-container-tall {
-                height: 420px;
-                padding-bottom: 25px;
+                height: 450px;
                 page-break-inside: avoid;
+                overflow: visible;
             }
 
             table {
@@ -1117,7 +1117,13 @@ BANANAS31:
                     mode: LightweightCharts.CrosshairMode.Normal,
                 },
                 rightPriceScale: { borderColor: '#30363d' },
-                timeScale: { borderColor: '#30363d', timeVisible: true, secondsVisible: false },
+                timeScale: {
+                    borderColor: '#30363d',
+                    timeVisible: true,
+                    secondsVisible: false,
+                    fixLeftEdge: true,
+                    fixRightEdge: true
+                },
             });
 
             const candlestickSeries = chart.addCandlestickSeries({
@@ -1179,7 +1185,13 @@ BANANAS31:
                     mode: LightweightCharts.CrosshairMode.Normal,
                 },
                 rightPriceScale: { borderColor: '#30363d' },
-                timeScale: { borderColor: '#30363d', timeVisible: true, secondsVisible: false },
+                timeScale: {
+                    borderColor: '#30363d',
+                    timeVisible: true,
+                    secondsVisible: false,
+                    fixLeftEdge: true,
+                    fixRightEdge: true
+                },
             });
 
             const candlestickSeries = chart.addCandlestickSeries({

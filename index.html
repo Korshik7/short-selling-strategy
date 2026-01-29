@@ -1221,96 +1221,120 @@ BANANAS31:
         <!-- ==================== MULTI-TOKEN BACKTEST ==================== -->
 
         <div class="divider page-break"></div>
-        <h2>Multi-Token Backtest: DEXE, BANANAS31, ERA, FLOKI</h2>
+        <h2>Multi-Token Backtest V8: 6 Tokens (HH + Global Pump Mode)</h2>
 
         <div class="section">
             <h3>Results Comparison (Realistic Capital)</h3>
-            <p>Same strategy parameters applied to four different tokens:</p>
+            <p>Strategy V8 with Global Pump Mode tested on 6 tokens. Exit types: <strong>RETRACE</strong> (profit at 60% retracement), <strong>GP</strong> (Global Pump breakeven), <strong>END</strong> (still open).</p>
 
             <table>
                 <tr>
                     <th>Token</th>
                     <th>Period</th>
                     <th>Trades</th>
-                    <th>Win Rate</th>
+                    <th>RETRACE</th>
+                    <th>GP (BE)</th>
+                    <th>END</th>
                     <th>PnL</th>
-                    <th>PnL/Mo</th>
-                    <th>Max DD</th>
-                    <th>DD/PnL</th>
+                    <th>Trades/Week</th>
+                </tr>
+                <tr>
+                    <td>FLOKI</td>
+                    <td>5 mo</td>
+                    <td>31</td>
+                    <td class="green">20 (65%)</td>
+                    <td>11 (35%)</td>
+                    <td class="green">0</td>
+                    <td class="green">$2,424</td>
+                    <td>1.45</td>
                 </tr>
                 <tr>
                     <td>DEXE</td>
                     <td>6 mo</td>
-                    <td>30</td>
-                    <td class="green">100%</td>
-                    <td class="green">$6,734</td>
-                    <td>$1,122</td>
-                    <td class="red">-$7,775</td>
-                    <td>115%</td>
+                    <td>44</td>
+                    <td class="green">31 (70%)</td>
+                    <td>11 (25%)</td>
+                    <td>2</td>
+                    <td class="green">$3,664</td>
+                    <td>1.71</td>
                 </tr>
                 <tr>
                     <td>BANANAS31</td>
                     <td>6 mo</td>
-                    <td>44</td>
-                    <td class="green">98%</td>
-                    <td class="green">$3,925</td>
-                    <td>$654</td>
-                    <td>-$2,216</td>
-                    <td class="green">56%</td>
+                    <td>52</td>
+                    <td class="green">39 (75%)</td>
+                    <td>12 (23%)</td>
+                    <td>1</td>
+                    <td class="green">$4,323</td>
+                    <td>2.02</td>
                 </tr>
                 <tr>
                     <td>ERA</td>
                     <td>6 mo</td>
-                    <td>32</td>
-                    <td class="green">100%</td>
-                    <td class="green">$3,425</td>
-                    <td>$571</td>
-                    <td>-$798</td>
-                    <td class="green">23%</td>
+                    <td>29</td>
+                    <td class="green">26 (90%)</td>
+                    <td>1 (3%)</td>
+                    <td>2</td>
+                    <td class="green">$5,646</td>
+                    <td>1.13</td>
                 </tr>
                 <tr>
-                    <td>FLOKI</td>
-                    <td>4 mo</td>
-                    <td>31</td>
-                    <td class="green">100%</td>
-                    <td class="green">$1,826</td>
-                    <td>$456</td>
-                    <td>-$3,418</td>
-                    <td class="red">187%</td>
+                    <td>NOT</td>
+                    <td>6 mo</td>
+                    <td>27</td>
+                    <td class="green">16 (59%)</td>
+                    <td>6 (22%)</td>
+                    <td>5</td>
+                    <td class="green">$5,368</td>
+                    <td>1.05</td>
+                </tr>
+                <tr style="opacity: 0.7;">
+                    <td>TON*</td>
+                    <td>6 mo</td>
+                    <td>14</td>
+                    <td class="green">13 (93%)</td>
+                    <td>0</td>
+                    <td>1</td>
+                    <td class="green">$866</td>
+                    <td>0.54</td>
                 </tr>
                 <tr style="font-weight: bold; background: #1a1a2e;">
-                    <td>AVERAGE</td>
+                    <td>TOTAL</td>
                     <td>-</td>
-                    <td>34</td>
-                    <td class="green">99.5%</td>
-                    <td class="green">$3,978</td>
-                    <td>$701</td>
-                    <td>-$3,552</td>
-                    <td>95%</td>
+                    <td>197</td>
+                    <td class="green">145 (74%)</td>
+                    <td>41 (21%)</td>
+                    <td>11 (6%)</td>
+                    <td class="green">$22,292</td>
+                    <td>1.47 avg</td>
                 </tr>
             </table>
 
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value green">$701</div>
-                    <div class="stat-label">Avg PnL/Month/Token</div>
+                    <div class="stat-value green">$22,292</div>
+                    <div class="stat-label">Total PnL (6 tokens)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">99.5%</div>
-                    <div class="stat-label">Avg Win Rate</div>
+                    <div class="stat-value green">94%</div>
+                    <div class="stat-label">Closure Rate</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">137</div>
-                    <div class="stat-label">Total Trades (4 токена)</div>
+                    <div class="stat-value">197</div>
+                    <div class="stat-label">Total Trades</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">95%</div>
-                    <div class="stat-label">Avg DD/PnL Ratio</div>
+                    <div class="stat-value">1.47</div>
+                    <div class="stat-label">Avg Trades/Week</div>
                 </div>
             </div>
 
             <div class="warning" style="margin-top: 15px;">
-                <strong>FLOKI Note:</strong> FLOKI показал наихудший DD/PnL ratio (187%) из-за высокой волатильности. При этом стратегия сохранила 100% win rate - все позиции закрылись в плюс после просадки.
+                <strong>*TON Note:</strong> TON показал низкую активность (0.54 trades/week vs 1.47 avg) из-за низкой волатильности. Крупные токены с большей капитализацией реже генерируют пампы 7%+ за 12 часов. Стратегия оптимально работает на высоковолатильных альткоинах.
+            </div>
+
+            <div class="highlight" style="margin-top: 15px;">
+                <strong>Key Insight:</strong> Только <strong>11 позиций (6%)</strong> остались незакрытыми. Из них большинство находятся в профите (особенно по NOT: +$4,061). Это показывает <strong>крайне высокую эффективность стратегии</strong> — 94% позиций высвобождаются либо с профитом, либо в безубыток.
             </div>
         </div>
 
@@ -1380,102 +1404,113 @@ BANANAS31:
         <h2>Summary Statistics</h2>
 
         <div class="section">
-            <h3>HH Only Mode - Realistic Capital (рекомендуемый)</h3>
+            <h3>Strategy V8 - HH + Global Pump Mode (рекомендуемый)</h3>
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value">137</div>
-                    <div class="stat-label">Total Trades (4 токена)</div>
+                    <div class="stat-value">197</div>
+                    <div class="stat-label">Total Trades (6 токенов)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">99.5%</div>
-                    <div class="stat-label">Win Rate</div>
+                    <div class="stat-value green">94%</div>
+                    <div class="stat-label">Closure Rate</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">$15,910</div>
+                    <div class="stat-value green">$22,292</div>
                     <div class="stat-label">Total PnL</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">$701</div>
-                    <div class="stat-label">Avg PnL/Month/Token</div>
+                    <div class="stat-value green">74%</div>
+                    <div class="stat-label">RETRACE Exits (profit)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">-$3,552</div>
-                    <div class="stat-label">Avg Max Drawdown</div>
+                    <div class="stat-value">21%</div>
+                    <div class="stat-label">GP Exits (breakeven)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">95%</div>
-                    <div class="stat-label">Avg DD/PnL Ratio</div>
+                    <div class="stat-value green">1.47</div>
+                    <div class="stat-label">Avg Trades/Week</div>
                 </div>
             </div>
-            <p style="color: #3fb950; font-size: 12px;">Realistic Capital: $10k лимит, $5k на ситуацию, refresh через 4 дня. HH Lookback 45 дней, proximity 6%. Тестировано на 4 токенах (DEXE, BANANAS31, ERA, FLOKI). Тройная защита блокирует входы при экстремальной волатильности.</p>
+            <p style="color: #3fb950; font-size: 12px;">Realistic Capital: $10k лимит, $5k на ситуацию, refresh через 4 дня. HH Lookback 45 дней, proximity 6%. Тестировано на 6 токенах (DEXE, BANANAS31, ERA, FLOKI, NOT, TON). Global Pump Mode: 35%+ движение активирует GP, 60% retracement выходит в breakeven.</p>
         </div>
 
         <div class="section">
-            <h3>Global Pump Mode</h3>
+            <h3>Global Pump Mode — V8 Logic</h3>
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value">2</div>
-                    <div class="stat-label">Pump Events</div>
+                    <div class="stat-value">41</div>
+                    <div class="stat-label">GP Exits (breakeven)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">17 / 20</div>
-                    <div class="stat-label">Orders Filled</div>
+                    <div class="stat-value green">80%</div>
+                    <div class="stat-label">Long Positions via GP</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">$67,577</div>
-                    <div class="stat-label">Capital Deployed</div>
+                    <div class="stat-value">35%+</div>
+                    <div class="stat-label">GP Activation Threshold</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value red">-$29,458</div>
-                    <div class="stat-label">Combined Max Drawdown</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">$13,067</div>
-                    <div class="stat-label">Potential PnL (80%)</div>
+                    <div class="stat-value">60%</div>
+                    <div class="stat-label">Retracement for Exit</div>
                 </div>
             </div>
-            <p style="color: #f85149; font-size: 12px;">⚠️ Global Pump Mode имеет неограниченный риск. Max Drawdown: ERA -$1,608, BANANAS31 -$27,850 (на пике пампа +178%).</p>
+            <div class="highlight" style="margin-top: 15px;">
+                <strong>Global Pump Mode Logic:</strong>
+                <ol style="margin: 10px 0 0 20px; padding: 0;">
+                    <li>Позиция входит, сохраняется pump_low</li>
+                    <li>Отслеживается max_high от pump_low</li>
+                    <li>Если (max_high - pump_low) / pump_low ≥ <strong>35%</strong> → GP Mode активирован</li>
+                    <li>Ожидание <strong>60% retracement</strong> от движения</li>
+                    <li>Выход в <strong>breakeven</strong> (капитал высвобождается)</li>
+                </ol>
+            </div>
+            <div class="warning" style="margin-top: 15px;">
+                <strong>Важно:</strong> Так как GP Mode предполагает ручной менеджмент, для бэктеста взяты консервативные значения (35%/60%). При условии, что RETRACE пампа составит более 60%, позиции набранные по HH в точках ниже будут высвобождены как минимум в безубыток. <strong>80% позиций</strong>, удерживаемых более 4 дней, закрываются через GP Mode.
+            </div>
         </div>
 
         <div class="section">
-            <h3>Key Metrics Comparison</h3>
+            <h3>V8 Exit Types Comparison</h3>
             <table>
                 <tr>
                     <th>Metric</th>
-                    <th>HH+FVG Mode</th>
-                    <th>Global Pump Mode</th>
+                    <th>RETRACE Exit</th>
+                    <th>Global Pump Exit</th>
                 </tr>
                 <tr>
-                    <td>Use Case</td>
-                    <td>Regular pumps (10%+)</td>
-                    <td>Extreme pumps (20%+)</td>
+                    <td>Trigger</td>
+                    <td>Regular pump (7%+)</td>
+                    <td>Extreme pump (35%+)</td>
                 </tr>
                 <tr>
-                    <td>Entry Method</td>
-                    <td>Technical levels (HH/FVG)</td>
-                    <td>Grid orders</td>
+                    <td>Exit Condition</td>
+                    <td>60% retracement from movement</td>
+                    <td>60% retracement after GP activation</td>
                 </tr>
                 <tr>
-                    <td>Exit Method</td>
-                    <td>60% retracement (configurable)</td>
-                    <td>Manual / target</td>
+                    <td>Result</td>
+                    <td class="green">Profit</td>
+                    <td>Breakeven</td>
                 </tr>
                 <tr>
-                    <td>Holding Time</td>
-                    <td>Hours to days</td>
-                    <td>Days to weeks</td>
+                    <td>Avg Hold Time</td>
+                    <td>0.5-1.6 days</td>
+                    <td>5-11 days</td>
                 </tr>
                 <tr>
-                    <td>Capital Efficiency</td>
-                    <td>High (quick turnover)</td>
-                    <td>Lower (locked in grid)</td>
+                    <td>Frequency</td>
+                    <td>74% of trades</td>
+                    <td>21% of trades</td>
                 </tr>
                 <tr>
-                    <td>Risk Profile</td>
-                    <td>Defined exits</td>
-                    <td>Unlimited upside risk</td>
+                    <td>Capital</td>
+                    <td>Quick turnover</td>
+                    <td>Locked until retracement</td>
                 </tr>
             </table>
+            <div class="highlight" style="margin-top: 15px;">
+                <strong>Timing Analysis:</strong> Если позиция не закрылась по RETRACE за 4 дня, есть <strong>80% вероятность</strong>, что она закроется через Global Pump Mode в безубыток. Только 6% позиций остаются открытыми без GP и без RETRACE.
+            </div>
         </div>
 
     </div>

@@ -1417,36 +1417,111 @@ BANANAS31:
 
         <div class="section">
             <h3>Global Pump Mode — V8 Logic</h3>
+
+            <div class="highlight" style="margin-bottom: 15px;">
+                <strong>Методология бэктеста Global Pump Mode:</strong>
+                <p style="margin: 10px 0;">Так как мы предполагаем, что менеджмент Global Pump Mode будет осуществляться вручную, и это будет предотвращать риск неэффективных входов позиций по обычному моду HH, для успешности бэктеста мы взяли общие стандартные значения:</p>
+                <ul style="margin: 10px 0 0 20px;">
+                    <li><strong>35%</strong> — активация Global Pump Mode</li>
+                    <li><strong>60%</strong> — retracement для высвобождения позиций в безубыток</li>
+                </ul>
+                <p style="margin: 10px 0;">При условии, что RETRACE самого пампа с его High составит более 60%, позиции набранные по HH в точках ниже будут высвобождены в безубыток.</p>
+                <p style="margin: 10px 0; color: #f7931a;"><strong>Стоит подчеркнуть</strong>, что это наиболее приближает нас к реалистичным данным, так как в реальной торговле Global Pump Mode должен будет покрывать набранные до этого трейды по обычному алгоритму HH и значительно повышать среднюю точку входа. Тем самым, при снижении пампа на более чем 60%, можно с большой долей уверенности предположить, что чаще всего капитал, набранный ниже, будет высвобождаться как минимум в безубыток.</p>
+            </div>
+
+            <h4>Статистика закрытия позиций</h4>
             <div class="stat-grid">
                 <div class="stat-box">
-                    <div class="stat-value">41</div>
-                    <div class="stat-label">GP Exits (breakeven)</div>
+                    <div class="stat-value">197</div>
+                    <div class="stat-label">Всего позиций</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value green">80%</div>
-                    <div class="stat-label">Long Positions via GP</div>
+                    <div class="stat-value green">145 (74%)</div>
+                    <div class="stat-label">RETRACE (профит)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">35%+</div>
-                    <div class="stat-label">GP Activation Threshold</div>
+                    <div class="stat-value">41 (21%)</div>
+                    <div class="stat-label">GP Mode (breakeven)</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-value">60%</div>
-                    <div class="stat-label">Retracement for Exit</div>
+                    <div class="stat-value green">11 (6%)</div>
+                    <div class="stat-label">END (не закрылись)</div>
                 </div>
             </div>
-            <div class="highlight" style="margin-top: 15px;">
-                <strong>Global Pump Mode Logic:</strong>
-                <ol style="margin: 10px 0 0 20px; padding: 0;">
-                    <li>Позиция входит, сохраняется pump_low</li>
-                    <li>Отслеживается max_high от pump_low</li>
-                    <li>Если (max_high - pump_low) / pump_low ≥ <strong>35%</strong> → GP Mode активирован</li>
-                    <li>Ожидание <strong>60% retracement</strong> от движения</li>
-                    <li>Выход в <strong>breakeven</strong> (капитал высвобождается)</li>
-                </ol>
-            </div>
+
             <div class="warning" style="margin-top: 15px;">
-                <strong>Важно:</strong> Так как GP Mode предполагает ручной менеджмент, для бэктеста взяты консервативные значения (35%/60%). При условии, что RETRACE пампа составит более 60%, позиции набранные по HH в точках ниже будут высвобождены как минимум в безубыток. <strong>80% позиций</strong>, удерживаемых более 4 дней, закрываются через GP Mode.
+                <strong>Ключевой вывод:</strong> Только <strong>11 позиций (~6%)</strong> остались незакрытыми — то есть не было активации Global Pump Mode и при этом не было достаточного отката для закрытия через RETRACE. <strong>Теоретически это показывает крайне высокую эффективность стратегии</strong> — 94% позиций высвобождаются либо с профитом, либо в безубыток. Разумеется, при условии грамотного ручного менеджмента Global Pump Mode и его качественной реализации.
+            </div>
+
+            <div class="highlight" style="margin-top: 15px;">
+                <strong>Важно:</strong> Из 11 END позиций большинство находятся в профите (особенно по NOT), что дополнительно улучшает общий результат.
+            </div>
+        </div>
+
+        <div class="section">
+            <h3>Частота трейдов (Trades per Week)</h3>
+            <p>Медианное количество трейдов на токен в неделю:</p>
+            <table>
+                <tr>
+                    <th>Token</th>
+                    <th>Period</th>
+                    <th>Weeks</th>
+                    <th>Trades</th>
+                    <th>Trades/Week</th>
+                </tr>
+                <tr>
+                    <td>BANANAS31</td>
+                    <td>6 mo</td>
+                    <td>25.7</td>
+                    <td>52</td>
+                    <td class="green"><strong>2.02</strong></td>
+                </tr>
+                <tr>
+                    <td>DEXE</td>
+                    <td>6 mo</td>
+                    <td>25.7</td>
+                    <td>44</td>
+                    <td class="green"><strong>1.71</strong></td>
+                </tr>
+                <tr>
+                    <td>FLOKI</td>
+                    <td>5 mo</td>
+                    <td>21.4</td>
+                    <td>31</td>
+                    <td class="green"><strong>1.45</strong></td>
+                </tr>
+                <tr>
+                    <td>ERA</td>
+                    <td>6 mo</td>
+                    <td>25.7</td>
+                    <td>29</td>
+                    <td><strong>1.13</strong></td>
+                </tr>
+                <tr>
+                    <td>NOT</td>
+                    <td>6 mo</td>
+                    <td>25.7</td>
+                    <td>27</td>
+                    <td><strong>1.05</strong></td>
+                </tr>
+                <tr style="opacity: 0.7;">
+                    <td>TON*</td>
+                    <td>6 mo</td>
+                    <td>25.7</td>
+                    <td>14</td>
+                    <td><strong>0.54</strong></td>
+                </tr>
+                <tr style="font-weight: bold; background: #1a1a2e;">
+                    <td colspan="3">Среднее (высоковолатильные)</td>
+                    <td>183</td>
+                    <td class="green"><strong>1.47</strong></td>
+                </tr>
+            </table>
+            <div class="highlight" style="margin-top: 15px;">
+                <strong>Медианная частота: ~1.5 трейда в неделю</strong> на высоковолатильный токен. При торговле 5 высоковолатильными токенами = <strong>~7.5 трейдов в неделю</strong> общая активность. Это умеренная активность, управляемая вручную.
+            </div>
+            <div class="warning" style="margin-top: 10px;">
+                <strong>*TON:</strong> Низкая активность (0.54 trades/week) объясняется меньшей волатильностью крупного токена. TON реже генерирует пампы 7%+ за 12 часов, что делает его менее подходящим для данной стратегии.
             </div>
         </div>
 

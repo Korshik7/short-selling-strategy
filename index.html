@@ -1,1419 +1,922 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Short Selling Strategy - Technical Documentation</title>
-    <script src="https://unpkg.com/lightweight-charts@4.1.0/dist/lightweight-charts.standalone.production.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #0d1117;
-            color: #c9d1d9;
-            line-height: 1.6;
-        }
-        .container { max-width: 1400px; margin: 0 auto; padding: 40px 20px; }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>HH mod+global — Документация</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #1c2333;
+    --border: #30363d;
+    --text: #e6edf3;
+    --text-muted: #8b949e;
+    --accent: #58a6ff;
+    --accent2: #3fb950;
+    --accent3: #d29922;
+    --red: #f85149;
+    --code-bg: #1a1f2b;
+    --table-header: #1a2233;
+    --table-odd: #161b22;
+    --table-even: #0d1117;
+  }
 
-        h1 {
-            font-size: 32px;
-            color: #58a6ff;
-            margin-bottom: 10px;
-            border-bottom: 2px solid #21262d;
-            padding-bottom: 15px;
-        }
-        h2 {
-            font-size: 24px;
-            color: #58a6ff;
-            margin: 40px 0 20px;
-            border-left: 4px solid #58a6ff;
-            padding-left: 15px;
-        }
-        h3 {
-            font-size: 18px;
-            color: #8b949e;
-            margin: 25px 0 15px;
-        }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .subtitle {
-            color: #8b949e;
-            font-size: 16px;
-            margin-bottom: 30px;
-        }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.7;
+    font-size: 15px;
+  }
 
-        .section {
-            background: #161b22;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 25px;
-            margin: 20px 0;
-        }
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 32px 80px;
+  }
 
-        .highlight {
-            background: #1f6feb22;
-            border-left: 4px solid #1f6feb;
-            padding: 15px 20px;
-            margin: 15px 0;
-            border-radius: 0 6px 6px 0;
-        }
+  /* ===== HEADER ===== */
+  .doc-header {
+    text-align: center;
+    padding: 48px 0 40px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 48px;
+  }
+  .doc-header h1 {
+    font-size: 36px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+    letter-spacing: -0.5px;
+  }
+  .doc-header .subtitle {
+    font-size: 17px;
+    color: var(--text-muted);
+  }
+  .doc-header .badge {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 4px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-radius: 20px;
+    background: rgba(88, 166, 255, 0.12);
+    color: var(--accent);
+    border: 1px solid rgba(88, 166, 255, 0.25);
+  }
 
-        .warning {
-            background: #f8514922;
-            border-left: 4px solid #f85149;
-            padding: 15px 20px;
-            margin: 15px 0;
-            border-radius: 0 6px 6px 0;
-        }
+  /* ===== TOC ===== */
+  .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px 28px;
+    margin-bottom: 48px;
+  }
+  .toc h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-muted);
+    margin-bottom: 14px;
+    border: none;
+    padding: 0;
+  }
+  .toc ol {
+    list-style: none;
+    counter-reset: toc;
+    padding: 0;
+  }
+  .toc li {
+    counter-increment: toc;
+    margin-bottom: 6px;
+  }
+  .toc li::before {
+    content: counter(toc, decimal-leading-zero);
+    color: var(--accent);
+    font-weight: 600;
+    font-size: 13px;
+    margin-right: 10px;
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+  }
+  .toc a {
+    color: var(--text);
+    text-decoration: none;
+    transition: color 0.15s;
+  }
+  .toc a:hover { color: var(--accent); }
 
-        code {
-            background: #21262d;
-            padding: 2px 8px;
-            border-radius: 4px;
-            font-family: 'Consolas', monospace;
-            color: #79c0ff;
-            font-size: 14px;
-        }
+  /* ===== SECTIONS ===== */
+  section { margin-bottom: 56px; }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin: 15px 0;
-            font-size: 14px;
-        }
-        th, td {
-            padding: 12px 15px;
-            text-align: left;
-            border: 1px solid #30363d;
-        }
-        th {
-            background: #21262d;
-            color: #58a6ff;
-            font-weight: 600;
-        }
-        tr:nth-child(even) { background: #161b22; }
-        tr:hover { background: #1f6feb22; }
+  h2 {
+    font-size: 26px;
+    font-weight: 700;
+    color: #fff;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--accent);
+    margin-bottom: 24px;
+  }
+  h3 {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--accent);
+    margin-top: 32px;
+    margin-bottom: 12px;
+  }
+  h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent3);
+    margin-top: 24px;
+    margin-bottom: 8px;
+  }
 
-        .stat-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
-        .stat-box {
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            padding: 20px;
-            text-align: center;
-        }
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: #58a6ff;
-        }
-        .stat-value.green { color: #3fb950; }
-        .stat-value.red { color: #f85149; }
-        .stat-label {
-            font-size: 12px;
-            color: #8b949e;
-            margin-top: 5px;
-            text-transform: uppercase;
-        }
+  p { margin-bottom: 14px; }
 
-        .chart-container {
-            width: 100%;
-            height: 450px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            margin: 20px 0;
-            overflow: visible;
-        }
+  /* ===== LISTS ===== */
+  ul, ol {
+    padding-left: 24px;
+    margin-bottom: 14px;
+  }
+  li { margin-bottom: 5px; }
+  li ul, li ol { margin-top: 5px; margin-bottom: 5px; }
 
-        .chart-container-tall {
-            width: 100%;
-            height: 550px;
-            background: #0d1117;
-            border: 1px solid #30363d;
-            border-radius: 8px;
-            margin: 20px 0;
-            overflow: visible;
-        }
+  /* ===== CODE ===== */
+  code {
+    font-family: 'SF Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+    font-size: 13px;
+    background: var(--code-bg);
+    color: #ff7b72;
+    padding: 2px 7px;
+    border-radius: 4px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
 
-        .legend {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            margin: 15px 0;
-            font-size: 13px;
-            flex-wrap: wrap;
-        }
-        .legend-item { display: flex; align-items: center; gap: 8px; }
-        .legend-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-        .legend-dot.sell { background: #f23645; }
-        .legend-dot.buy { background: #089981; }
-        .legend-dot.order { background: #f7931a; border: 2px dashed #f7931a; background: transparent; }
-        .legend-line {
-            width: 30px;
-            height: 2px;
-        }
-        .legend-line.low { background: #f85149; }
-        .legend-line.mid { background: #f7931a; }
-        .legend-line.high { background: #3fb950; }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px 20px;
+    overflow-x: auto;
+    margin: 16px 0;
+    line-height: 1.5;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: var(--text);
+    font-size: 13px;
+  }
 
-        .formula {
-            background: #21262d;
-            border: 1px solid #30363d;
-            border-radius: 6px;
-            padding: 20px;
-            margin: 15px 0;
-            font-family: 'Consolas', monospace;
-            overflow-x: auto;
-            white-space: pre-wrap;
-        }
+  /* ===== TABLES ===== */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  th {
+    background: var(--table-header);
+    color: var(--accent);
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 2px solid var(--border);
+  }
+  td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+  }
+  tr:nth-child(odd) td { background: var(--table-odd); }
+  tr:nth-child(even) td { background: var(--table-even); }
+  tr:last-child td { border-bottom: none; }
 
-        .two-col {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-        @media (max-width: 900px) {
-            .two-col { grid-template-columns: 1fr; }
-        }
+  /* ===== SPECIAL BLOCKS ===== */
+  .diagram {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 20px 0;
+    overflow-x: auto;
+    font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+    font-size: 13px;
+    line-height: 1.4;
+    white-space: pre;
+    color: var(--text-muted);
+  }
 
-        .badge {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-        .badge.hh { background: #f2364533; color: #f23645; }
-        .badge.fvg { background: #08998133; color: #089981; }
-        .badge.pump { background: #f7931a33; color: #f7931a; }
+  .flow {
+    text-align: center;
+    padding: 20px 0;
+    margin: 16px 0;
+  }
+  .flow-chain {
+    display: inline-flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .flow-step {
+    display: inline-block;
+    padding: 8px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 14px;
+  }
+  .flow-arrow {
+    color: var(--text-muted);
+    font-size: 18px;
+    margin: 0 6px;
+  }
+  .flow-step.pending { background: rgba(210,153,34,0.15); color: var(--accent3); border: 1px solid rgba(210,153,34,0.3); }
+  .flow-step.open { background: rgba(88,166,255,0.12); color: var(--accent); border: 1px solid rgba(88,166,255,0.25); }
+  .flow-step.closing { background: rgba(248,81,73,0.12); color: var(--red); border: 1px solid rgba(248,81,73,0.25); }
+  .flow-step.closed { background: rgba(63,185,80,0.12); color: var(--accent2); border: 1px solid rgba(63,185,80,0.25); }
+  .flow-step.archive { background: rgba(139,148,158,0.12); color: var(--text-muted); border: 1px solid rgba(139,148,158,0.25); }
 
-        .divider {
-            height: 2px;
-            background: linear-gradient(90deg, #30363d, #58a6ff, #30363d);
-            margin: 50px 0;
-        }
+  .callout {
+    border-left: 4px solid var(--accent);
+    background: rgba(88, 166, 255, 0.06);
+    padding: 14px 18px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+  }
+  .callout.warn {
+    border-left-color: var(--accent3);
+    background: rgba(210, 153, 34, 0.06);
+  }
+  .callout.critical {
+    border-left-color: var(--red);
+    background: rgba(248, 81, 73, 0.06);
+  }
+  .callout strong {
+    color: var(--accent);
+  }
+  .callout.warn strong { color: var(--accent3); }
+  .callout.critical strong { color: var(--red); }
 
-        ul { margin-left: 25px; }
-        li { margin: 8px 0; }
+  .example-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 20px;
+    margin: 16px 0;
+  }
+  .example-block .title {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--accent2);
+    margin-bottom: 10px;
+    font-weight: 600;
+  }
 
-        .green { color: #3fb950; }
-        .red { color: #f85149; }
-        .orange { color: #f7931a; }
+  .grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin: 16px 0;
+  }
+  .grid-2 .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 18px;
+  }
+  .grid-2 .card h4 {
+    margin-top: 0;
+    margin-bottom: 8px;
+  }
 
-        /* Print styles for PDF */
-        @media print {
-            * {
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                color-adjust: exact !important;
-            }
+  strong { color: #fff; }
+  em { color: var(--text-muted); font-style: italic; }
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 48px 0;
+  }
 
-            body {
-                background: #0d1117 !important;
-                font-size: 11px;
-            }
-
-            .container {
-                max-width: 100%;
-                padding: 15px;
-            }
-
-            .page-break {
-                page-break-before: always;
-                padding-top: 20px;
-            }
-
-            .section {
-                page-break-inside: avoid;
-                margin: 15px 0;
-                padding: 18px;
-            }
-
-            .chart-container {
-                height: 380px;
-                page-break-inside: avoid;
-                overflow: visible;
-            }
-
-            .chart-container-tall {
-                height: 450px;
-                page-break-inside: avoid;
-                overflow: visible;
-            }
-
-            table {
-                page-break-inside: avoid;
-                font-size: 11px;
-            }
-
-            th, td {
-                padding: 8px 10px;
-            }
-
-            h1 {
-                font-size: 26px;
-                page-break-after: avoid;
-            }
-
-            h2 {
-                font-size: 20px;
-                margin: 25px 0 15px;
-                page-break-after: avoid;
-            }
-
-            h3 {
-                font-size: 15px;
-                margin: 18px 0 12px;
-            }
-
-            .stat-grid {
-                page-break-inside: avoid;
-            }
-
-            .stat-box {
-                padding: 15px;
-            }
-
-            .stat-value {
-                font-size: 22px;
-            }
-
-            .formula {
-                font-size: 11px;
-                padding: 15px;
-            }
-
-            .highlight, .warning {
-                padding: 12px 15px;
-                margin: 12px 0;
-            }
-
-            .divider {
-                margin: 35px 0;
-            }
-
-            .two-col {
-                gap: 15px;
-            }
-
-            .legend {
-                font-size: 11px;
-                margin: 10px 0;
-            }
-        }
-
-        @page {
-            size: A4;
-            margin: 12mm;
-        }
-    </style>
+  @media print {
+    body { background: #fff; color: #111; font-size: 11pt; }
+    .container { max-width: 100%; padding: 0; }
+    code { background: #f4f4f4; color: #c7254e; border-color: #ddd; }
+    pre { background: #f8f8f8; border-color: #ddd; }
+    pre code { color: #333; }
+    h2 { border-bottom-color: #333; color: #111; }
+    h3 { color: #1a5276; }
+    h4 { color: #7d6608; }
+    th { background: #eee; color: #333; }
+    td { background: #fff !important; }
+    .doc-header { border-bottom-color: #ccc; }
+    .doc-header h1 { color: #111; }
+    .badge { background: #eef; color: #336; border-color: #cce; }
+    .toc { background: #f8f8f8; border-color: #ddd; }
+    .callout { background: #f0f6ff; }
+    .callout.warn { background: #fff8e6; }
+    .callout.critical { background: #fff0f0; }
+    .diagram { background: #f8f8f8; color: #555; border-color: #ddd; }
+    .flow-step { border-width: 2px; }
+    .example-block { background: #f8f8f8; border-color: #ddd; }
+    .grid-2 .card { background: #f8f8f8; border-color: #ddd; }
+    var { color: #111; }
+    strong { color: #111; }
+  }
+</style>
 </head>
 <body>
-    <div class="container">
-
-        <!-- HEADER -->
-        <h1>Short Selling Strategy</h1>
-        <p class="subtitle">Technical Documentation | HH Mode & Global Pump Mode (V8)</p>
-
-        <!-- ==================== REALISTIC CAPITAL MANAGEMENT ==================== -->
-
-        <div class="section">
-            <h3>Realistic Capital Management</h3>
-            <p>Для реалистичности бэктестов используется следующая модель управления капиталом:</p>
-
-            <div class="highlight">
-                <strong>Capital Lock Rule:</strong> Рабочий капитал составляет <code>$10,000</code>. На каждый pump detect используется <code>$5,000</code>, чтобы оставалась возможность добавить ещё $5,000 на следующем детекте, если ситуация повторится выше.
-            </div>
-
-            <table>
-                <tr>
-                    <th>Parameter</th>
-                    <th>Value</th>
-                    <th>Description</th>
-                </tr>
-                <tr>
-                    <td>Working Capital</td>
-                    <td>$10,000</td>
-                    <td>Максимальный капитал в торгах</td>
-                </tr>
-                <tr>
-                    <td>Per Situation</td>
-                    <td>$5,000</td>
-                    <td>Объём на один pump detect</td>
-                </tr>
-                <tr>
-                    <td>Capital Refresh</td>
-                    <td>4 days</td>
-                    <td>Если капитал заблокирован (позиции не закрылись из-за продолжающегося пампа), через 4 дня добавляются новые $10,000</td>
-                </tr>
-                <tr>
-                    <td>Capital Return</td>
-                    <td>Automatic</td>
-                    <td>При закрытии старых позиций новые $10,000 убираются, капитал возвращается к $10,000</td>
-                </tr>
-            </table>
-
-            <div class="formula">Capital Flow Example:
-Day 1: $10k available, pump detected, use $5k
-Day 2: $5k available, pump detected, use $5k
-Day 3-6: $0 available, positions stuck (price going up)
-Day 7: Capital refresh -> add $10k (now $10k available)
-Day 8: Old positions close -> remove refresh capital, back to $10k
-
-Result: Capital never exceeds $10k in active trading</div>
-
-            <p style="color: #8b949e; font-size: 13px; margin-top: 15px;">
-                Данный подход обеспечивает реалистичную оценку доходности. В отличие от бэктестов с неограниченным капиталом, где одни и те же $10k используются многократно (создавая иллюзию 97% ROI), здесь учитывается реальная блокировка средств в открытых позициях.
-            </p>
-        </div>
-
-        <!-- ==================== BACKTEST LOGIC ==================== -->
-
-        <div class="section">
-            <h3>Backtest Logic</h3>
-            <p>Методология тестирования стратегии на исторических данных:</p>
-
-            <div class="highlight">
-                <strong>No Look-Ahead Bias:</strong> Алгоритм работает исключительно на основе прошлых данных. В каждый момент времени он "видит" только свечи до текущей включительно. Решения принимаются через лимитные ордера без знания будущего движения цены.
-            </div>
-
-            <table>
-                <tr>
-                    <th>Parameter</th>
-                    <th>Value</th>
-                </tr>
-                <tr>
-                    <td>Data Source</td>
-                    <td>Binance historical OHLCV (1H candles)</td>
-                </tr>
-                <tr>
-                    <td>Tokens</td>
-                    <td>DEXE, ERA, BANANAS31, FLOKI, NOT, TON</td>
-                </tr>
-                <tr>
-                    <td>Period</td>
-                    <td>6 months (Aug 2025 - Jan 2026)</td>
-                </tr>
-                <tr>
-                    <td>Order Type</td>
-                    <td>Limit orders only (no market orders)</td>
-                </tr>
-                <tr>
-                    <td>Execution</td>
-                    <td>Fill when candle HIGH >= order price</td>
-                </tr>
-                <tr>
-                    <td>Budget</td>
-                    <td>$10,000 per token</td>
-                </tr>
-            </table>
-
-            <div class="formula">Order Flow:
-1. Pump detected (7%+ за 12h) → scan for HH levels
-2. Place SELL limit orders at detected HH levels
-3. Wait for price to reach order levels (fill on HIGH >= price)
-4. Track open positions
-5. Exit when 60% retracement condition met (fill on LOW <= exit_level)
-
-Никаких "подглядываний" в будущее - алгоритм действует в условиях полной неопределенности, как в реальной торговле.</div>
-        </div>
-
-        <!-- ==================== PART 1: HH MODE ==================== -->
-
-        <div class="divider page-break"></div>
-        <h2>Part 1: HH Mode (Higher Highs)</h2>
-
-        <div class="section">
-            <h3>Core Concept</h3>
-            <p>Стратегия шортит на локальных максимумах (Higher Highs) во время памп-фаз. Использует концепцию Weekly Range для определения зон входа.</p>
-
-            <div class="highlight">
-                <strong>Key Principle:</strong> Short selling at liquidity zones (HH) located in the upper 50% of weekly range.
-            </div>
-        </div>
-
-        <div class="section">
-            <h3>Weekly Range Position</h3>
-            <p>Каждая цена оценивается относительно недельного диапазона. Зоны определяют где можно входить:</p>
-
-            <div class="formula">position = (current_price - week_low) / (week_high - week_low)
-
-Zones:
-  0%   - 50%  → Lower zone (NO ENTRY) - слишком низко для шорта
-  50%  - 100% → Upper zone (HH ENTRY) - зона для входов по HH
-                при условии: Pump Detect (7%+ за 12h) + наличие валидных 1H HH уровней</div>
-
-            <p style="margin-top: 15px;">Визуализация зон на реальном графике ERA (Nov 17-30, 2025). Расширенный период чтобы показать где сформировался Week HIGH:</p>
-            <div id="chart-weekly-range" class="chart-container-tall"></div>
-            <div class="legend">
-                <div class="legend-item"><div class="legend-line low"></div><span>0% - Week LOW ($0.2250)</span></div>
-                <div class="legend-item"><div class="legend-line mid"></div><span>50% - HH Zone Start ($0.2638)</span></div>
-                <div class="legend-item"><span style="color:#58a6ff">100% - Week HIGH ($0.3026) - сформирован 24 ноября</span></div>
-            </div>
-            <p style="margin-top: 10px; color: #8b949e; font-size: 13px;">Зона выше 50% - область где ищем HH для входа в шорт. Ниже 50% входы не производятся.</p>
-        </div>
-
-        <div class="section">
-            <h3>Entry Conditions: HH Detection</h3>
-
-            <div class="highlight">
-                <strong><span class="badge hh">HH</span> Higher High Detection</strong>
-            </div>
-
-            <div class="formula">Logic:
-1. Lookback: 1080 candles (45 days on 1H)
-2. Pattern: high[i] > high[i±1] AND high[i] > high[i±2]
-3. Position filter: HH must be > 50% of 7-day range
-4. Proximity filter: HH must be within 6% above current price
-5. Validation: цена не касалась этого уровня после формирования HH (если коснулась - HH инвалидирован, ликвидность снята)
-6. Order expiry: 48 hours, затем ордер удаляется
-7. Max 3 HH levels per pump detection</div>
-        </div>
-
-        <div class="section">
-            <h3>Pump Detection Trigger</h3>
-            <div class="formula">Logic:
-1. Lookback window: 12 candles (12 hours on 1H)
-2. Calculate: pump_pct = (window_high - window_low) / window_low
-3. Trigger condition: pump_pct >= 7%
-4. Action: scan for HH within 6% above current price, place limit orders</div>
-        </div>
-
-        <div class="section">
-            <h3>Exit Strategy</h3>
-            <div class="formula">Logic: 60% Retracement Exit <span style="color: #f7931a;">(configurable, can be adjusted 50-70%)</span>
-1. Calculate 24h range: range = high_24h - low_24h
-2. Exit level: exit_price = high_24h - (range * 0.60)
-3. Trigger: current_low <= exit_price AND entry_price > exit_price
-4. Result: profit = (entry_price - exit_price) / entry_price * position_size</div>
-
-            <div class="highlight">
-                <strong>Принцип:</strong> После пампа цена обычно откатывает на 60%+ от движения. Закрытие происходит автоматически при достижении уровня отката. Параметр 60% можно настраивать в зависимости от волатильности актива.
-            </div>
-        </div>
-
-        <div class="section">
-            <h3>Position Sizing</h3>
-            <div class="formula">Budget allocation (EQUAL distribution):
-- Situation budget: $5,000 per pump detection
-- HH distribution: equal split between detected levels (max 3 levels)
-
-Example with $5,000 budget and 3 HH levels:
-  HH#1: $1,667 (33.3%)
-  HH#2: $1,667 (33.3%)
-  HH#3: $1,667 (33.3%)</div>
-        </div>
-
-        <div class="section">
-            <h3>Protection Mechanism</h3>
-            <div class="formula">Logic: Flash Crash Protection
-1. Monitor: 12-candle window for sudden drops
-2. Trigger: drop >= 30% from window high
-3. Action: pause new entries for 12 hours
-4. Reason: avoid entering during cascade liquidations</div>
-        </div>
-
-        <!-- CHART: ERA Nov 10-30 with precise entries -->
-        <div class="section page-break">
-            <h3>Trade Visualization: ERA/USDT (Nov 10-30, 2025)</h3>
-            <p>Реальные точки входа из бэктеста. Маркеры показывают фактические цены исполнения ордеров на соответствующих свечах.</p>
-            <div id="chart-era-nov" class="chart-container-tall"></div>
-            <div class="legend">
-                <div class="legend-item"><div class="legend-dot sell"></div><span>SELL (Entry at HH level)</span></div>
-                <div class="legend-item"><div class="legend-dot buy"></div><span>BUY (Exit at 60% retrace)</span></div>
-            </div>
-            <p style="margin-top: 10px; color: #8b949e; font-size: 13px;">Точки входа не идеальны - это реальные исполнения из бэктеста. Ордера исполняются когда HIGH свечи достигает уровня лимитки.</p>
-        </div>
-
-        <!-- ==================== PART 2: GLOBAL PUMP MODE ==================== -->
-
-        <div class="divider page-break"></div>
-        <h2>Part 2: Global Pump Mode</h2>
-
-        <div class="section">
-            <h3>Core Concept</h3>
-            <p>Режим для экстремальных пампов (35%+ движение). Позиции, набранные по HH, автоматически переходят в Global Pump Mode и выходят в безубыток при 60% retracement.</p>
-
-            <div class="warning">
-                <strong>Примечание:</strong> Ниже приведён пример ручной настройки Grid Orders для индивидуальной ситуации (ERA Jan 25). Это демонстрация как можно управлять GP Mode вручную с использованием сетки ордеров. Параметры (20% trigger, 50% max) подбираются под конкретный токен.
-            </div>
-        </div>
-
-        <div class="section">
-            <h3>Configurable Parameters</h3>
-            <p>Все параметры настраиваются под конкретную ситуацию:</p>
-
-            <table>
-                <tr>
-                    <th>Parameter</th>
-                    <th>Default</th>
-                    <th>Range</th>
-                    <th>Description</th>
-                </tr>
-                <tr>
-                    <td><code>TRIGGER_PCT</code></td>
-                    <td>20%</td>
-                    <td>15-30%</td>
-                    <td>Процент роста от 24h LOW для активации режима. Чем выше - тем меньше ложных сигналов, но позже вход.</td>
-                </tr>
-                <tr>
-                    <td><code>START_PRICE</code></td>
-                    <td>auto (24h LOW)</td>
-                    <td>manual override</td>
-                    <td>Базовая цена для расчетов. По умолчанию автоматически берется минимум за 24 часа. Можно задать вручную.</td>
-                </tr>
-                <tr>
-                    <td><code>MAX_PUMP_PCT</code></td>
-                    <td>50%</td>
-                    <td>30-100%+</td>
-                    <td>Верхняя граница сетки от START_PRICE. Определяет до какого уровня размещать ордера. Для сильных пампов увеличивать до 70-100%.</td>
-                </tr>
-                <tr>
-                    <td><code>BUDGET</code></td>
-                    <td>-</td>
-                    <td>required</td>
-                    <td>Общий бюджет на сетку. Распределяется между ордерами с весом к верхним уровням.</td>
-                </tr>
-                <tr>
-                    <td><code>NUM_ORDERS</code></td>
-                    <td>10</td>
-                    <td>5-20</td>
-                    <td>Количество ордеров в сетке. Больше ордеров = лучшее заполнение, но сложнее управление.</td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="section">
-            <h3>Trigger Condition</h3>
-            <div class="formula">Logic:
-1. Calculate 24h LOW (rolling window, updates every 5 minutes in real-time)
-2. Trigger level = 24h_LOW * (1 + TRIGGER_PCT)
-3. Condition: current_high >= trigger_level (алгоритм мониторит 5-минутный график и видит все всплески цены в реальном времени)
-4. Action: place grid orders from current_price to max_price</div>
-        </div>
-
-        <div class="section">
-            <h3>Grid Construction</h3>
-            <p>Сетка строится от текущей цены в момент срабатывания триггера до целевого максимума:</p>
-
-            <div class="formula">Logic:
-1. trigger_level = START_PRICE * (1 + TRIGGER_PCT)  // теоретический уровень триггера
-2. trigger_price = actual price when condition met  // фактическая цена в момент детекции
-3. max_price = START_PRICE * (1 + MAX_PUMP_PCT)     // верхняя граница сетки
-4. grid_start = trigger_price                        // сетка начинается от текущей цены
-5. grid_end = max_price                              // сетка заканчивается на целевом максимуме
-6. step = (grid_end - grid_start) / (NUM_ORDERS - 1)
-
-Почему grid_start = trigger_price, а не trigger_level?
-- Мы не можем ставить SELL лимитки ниже текущей цены (они исполнятся сразу)
-- Триггер может сработать когда цена уже выше trigger_level
-- Поэтому сетка строится от фактической цены в момент детекции</div>
-
-            <h4>Example: ERA Jan 25</h4>
-            <table>
-                <tr>
-                    <th>Parameter</th>
-                    <th>Value</th>
-                    <th>Calculation</th>
-                </tr>
-                <tr>
-                    <td>START_PRICE (24h LOW)</td>
-                    <td>$0.2065</td>
-                    <td>min(last 24h)</td>
-                </tr>
-                <tr>
-                    <td>TRIGGER_PCT</td>
-                    <td>20%</td>
-                    <td>setting</td>
-                </tr>
-                <tr>
-                    <td>Trigger Level</td>
-                    <td>$0.2478</td>
-                    <td>$0.2065 × 1.20</td>
-                </tr>
-                <tr>
-                    <td>Actual Trigger Price</td>
-                    <td class="orange">$0.2672</td>
-                    <td>HIGH свечи когда сработал триггер (+29.4% от LOW)</td>
-                </tr>
-                <tr>
-                    <td>MAX_PUMP_PCT</td>
-                    <td>50%</td>
-                    <td>setting</td>
-                </tr>
-                <tr>
-                    <td>Max Price (grid end)</td>
-                    <td>$0.3097</td>
-                    <td>$0.2065 × 1.50</td>
-                </tr>
-                <tr>
-                    <td>Grid Range</td>
-                    <td>$0.2672 → $0.3097</td>
-                    <td>trigger_price → max_price</td>
-                </tr>
-            </table>
-        </div>
-
-        <div class="section">
-            <h3>Weighted Size Distribution</h3>
-            <p>Математическая модель распределения размеров ордеров рассчитана так, чтобы при достижении целевого пампа (например 50%) средняя цена SELL была на уровне ~75% движения от START_PRICE.</p>
-
-            <div class="formula">Target: Average entry at 75% of pump range (from START_PRICE to MAX_PRICE)
-
-Calculation:
-1. Define target_avg = START_PRICE + 0.75 × (MAX_PRICE - START_PRICE)
-2. Use exponential weights: weight[i] = exp(k × i / n)
-3. Calibrate k to achieve target_avg
-
-For ERA example:
-  START_PRICE = $0.2065
-  MAX_PRICE = $0.3097 (50% pump)
-  Target avg = $0.2065 + 0.75 × ($0.3097 - $0.2065) = $0.2839
-
-Weighted avg of filled orders should be ≈ $0.2839 (75% of move)</div>
-
-            <h4>Grid Orders Example: ERA (Budget $40,000)</h4>
-            <table>
-                <tr>
-                    <th>#</th>
-                    <th>Price</th>
-                    <th>% from LOW</th>
-                    <th>Size</th>
-                    <th>% Budget</th>
-                </tr>
-                <tr><td>1</td><td>$0.2672</td><td>+29.4%</td><td>$3,822</td><td>9.6%</td></tr>
-                <tr><td>2</td><td>$0.2719</td><td>+31.7%</td><td>$3,861</td><td>9.7%</td></tr>
-                <tr><td>3</td><td>$0.2767</td><td>+34.0%</td><td>$3,900</td><td>9.8%</td></tr>
-                <tr><td>4</td><td>$0.2814</td><td>+36.3%</td><td>$3,939</td><td>9.8%</td></tr>
-                <tr><td>5</td><td>$0.2861</td><td>+38.6%</td><td>$3,978</td><td>9.9%</td></tr>
-                <tr><td>6</td><td>$0.2908</td><td>+40.8%</td><td>$4,018</td><td>10.0%</td></tr>
-                <tr><td>7</td><td>$0.2956</td><td>+43.1%</td><td>$4,059</td><td>10.1%</td></tr>
-                <tr style="color: #8b949e;"><td>8</td><td>$0.3003</td><td>+45.4%</td><td>$4,100</td><td>10.3% (unfilled)</td></tr>
-                <tr style="color: #8b949e;"><td>9</td><td>$0.3050</td><td>+47.7%</td><td>$4,141</td><td>10.4% (unfilled)</td></tr>
-                <tr style="color: #8b949e;"><td>10</td><td>$0.3097</td><td>+50.0%</td><td>$4,182</td><td>10.5% (unfilled)</td></tr>
-            </table>
-            <p style="margin-top: 10px; color: #8b949e;">Серым отмечены неисполненные ордера (цена не достигла). Фактическая средняя = $0.2816 (+36.4% от LOW)</p>
-        </div>
-
-        <!-- CHART: ERA Jan 25 Global Pump -->
-        <div class="section page-break">
-            <h3>Global Pump Visualization: ERA/USDT (Jan 20-27, 2026)</h3>
-            <p>Памп 25 января: от $0.2065 (24h LOW) до $0.2980 (+44.3%). Trigger at +29.4%, 7/10 orders filled.</p>
-            <div id="chart-era-jan" class="chart-container"></div>
-            <div class="legend">
-                <div class="legend-item"><div class="legend-dot sell"></div><span>Filled Orders</span></div>
-                <div class="legend-item"><div class="legend-dot order"></div><span>Unfilled Orders</span></div>
-            </div>
-        </div>
-
-        <!-- CHART: BANANAS Nov Global Pump -->
-        <div class="section page-break">
-            <h3>Global Pump Visualization: BANANAS31/USDT (Nov 15-28, 2025)</h3>
-
-            <div class="warning">
-                <strong>Note:</strong> Это неидеальный пример - памп +162% сложно было предвидеть. Однако даже с консервативными настройками (trigger 25%, max 100%) стратегия захватила значительную часть движения. В реальности такие экстремальные пампы редки.
-            </div>
-
-            <p>Памп 16-17 ноября: от $0.0023 (24h LOW) до $0.0064 (+178%). Все 10 ордеров исполнены.</p>
-            <div id="chart-banana-nov" class="chart-container"></div>
-            <div class="legend">
-                <div class="legend-item"><div class="legend-dot sell"></div><span>Filled Orders (10/10)</span></div>
-            </div>
-        </div>
-
-        <!-- GLOBAL PUMP RESULTS -->
-        <div class="section page-break">
-            <h3>Backtest Results: Global Pump Mode</h3>
-
-            <h4>ERA Results (Jan 25, 2026)</h4>
-            <table>
-                <tr>
-                    <th>Metric</th>
-                    <th>Value</th>
-                </tr>
-                <tr>
-                    <td>Trigger Time</td>
-                    <td>2026-01-25 02:00:00</td>
-                </tr>
-                <tr>
-                    <td>24h LOW (START_PRICE)</td>
-                    <td>$0.2065</td>
-                </tr>
-                <tr>
-                    <td>Trigger Price</td>
-                    <td>$0.2672 (+29.4%)</td>
-                </tr>
-                <tr>
-                    <td>Max Reached</td>
-                    <td>$0.2980 (+44.3%)</td>
-                </tr>
-                <tr>
-                    <td>Orders Filled</td>
-                    <td>7 / 10</td>
-                </tr>
-                <tr>
-                    <td>Capital Deployed</td>
-                    <td>$27,577</td>
-                </tr>
-                <tr>
-                    <td>Tokens Shorted</td>
-                    <td>98,051</td>
-                </tr>
-                <tr>
-                    <td>Average Entry</td>
-                    <td>$0.2816 (+36.4% from LOW)</td>
-                </tr>
-                <tr>
-                    <td>Unused Capital</td>
-                    <td>$12,423</td>
-                </tr>
-                <tr>
-                    <td class="red">Max Drawdown (at peak)</td>
-                    <td class="red">-$1,608</td>
-                </tr>
-            </table>
-
-            <h4>BANANAS31 Results (Nov 16-17, 2025)</h4>
-            <table>
-                <tr>
-                    <th>Metric</th>
-                    <th>Value</th>
-                </tr>
-                <tr>
-                    <td>Trigger Time</td>
-                    <td>2025-11-16 17:00:00</td>
-                </tr>
-                <tr>
-                    <td>24h LOW (START_PRICE)</td>
-                    <td>$0.0023</td>
-                </tr>
-                <tr>
-                    <td>Trigger Price</td>
-                    <td>$0.0030 (+30.2%)</td>
-                </tr>
-                <tr>
-                    <td>Max Reached</td>
-                    <td>$0.0064 (+177.8%)</td>
-                </tr>
-                <tr>
-                    <td>Orders Filled</td>
-                    <td>10 / 10</td>
-                </tr>
-                <tr>
-                    <td>Capital Deployed</td>
-                    <td>$40,000</td>
-                </tr>
-                <tr>
-                    <td>Tokens Shorted</td>
-                    <td>10,711,639</td>
-                </tr>
-                <tr>
-                    <td>Average Entry</td>
-                    <td>$0.0038 (+65.8% from LOW)</td>
-                </tr>
-                <tr>
-                    <td class="red">Max Drawdown (at peak)</td>
-                    <td class="red">-$27,850</td>
-                </tr>
-            </table>
-
-            <p class="warning" style="margin-top: 15px;">
-                <strong>Warning:</strong> BANANAS31 показал экстремальный памп +178%, что привело к нереализованному убытку -$27,850 на пике. Расчёт: (0.0064 - 0.0038) × 10,711,639 токенов. Это демонстрирует главный риск Global Pump Mode - неограниченный потенциал убытка при продолжении роста.
-            </p>
-
-            <h4>Potential PnL Calculation</h4>
-            <div class="formula">Scenario: Price retraces 80%+ of the pump move
-
-ERA:
-  Pump range: $0.2065 → $0.2980 (move = $0.0915)
-  80% retrace level: $0.2980 - 0.80 × $0.0915 = $0.2248
-
-  Position: 98,051 tokens @ avg $0.2816
-  Exit at $0.2248:
-  PnL = (0.2816 - 0.2248) × 98,051 = <span class="green">$5,569</span> (+20.2%)
-
-BANANAS31:
-  Pump range: $0.0023 → $0.0064 (move = $0.0041)
-  80% retrace level: $0.0064 - 0.80 × $0.0041 = $0.0031
-
-  Position: 10,711,639 tokens @ avg $0.0038
-  Exit at $0.0031:
-  PnL = (0.0038 - 0.0031) × 10,711,639 = <span class="green">$7,498</span> (+18.7%)
-
-<span class="green">Combined Potential PnL (80% retrace): $13,067</span></div>
-
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <div class="stat-value">$67,577</div>
-                    <div class="stat-label">Total Capital Deployed</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">17 / 20</div>
-                    <div class="stat-label">Orders Filled</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">$13,067</div>
-                    <div class="stat-label">Potential PnL (80% retrace)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">19.3%</div>
-                    <div class="stat-label">Potential ROI</div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ==================== MULTI-TOKEN BACKTEST ==================== -->
-
-        <div class="divider page-break"></div>
-        <h2>Multi-Token Backtest V8: 6 Tokens (HH + Global Pump Mode)</h2>
-
-        <div class="section">
-            <h3>Results Comparison (Realistic Capital)</h3>
-            <p>Strategy V8 with Global Pump Mode tested on 6 tokens. Exit types: <strong>RETRACE</strong> (profit at 60% retracement), <strong>GP</strong> (Global Pump breakeven), <strong>END</strong> (still open).</p>
-
-            <table>
-                <tr>
-                    <th>Token</th>
-                    <th>Period</th>
-                    <th>Trades</th>
-                    <th>RETRACE</th>
-                    <th>GP (BE)</th>
-                    <th>END</th>
-                    <th>PnL</th>
-                    <th>Trades/Week</th>
-                </tr>
-                <tr>
-                    <td>FLOKI</td>
-                    <td>5 mo</td>
-                    <td>31</td>
-                    <td class="green">20 (65%)</td>
-                    <td>11 (35%)</td>
-                    <td class="green">0</td>
-                    <td class="green">$2,424</td>
-                    <td>1.45</td>
-                </tr>
-                <tr>
-                    <td>DEXE</td>
-                    <td>6 mo</td>
-                    <td>44</td>
-                    <td class="green">31 (70%)</td>
-                    <td>11 (25%)</td>
-                    <td>2</td>
-                    <td class="green">$3,664</td>
-                    <td>1.71</td>
-                </tr>
-                <tr>
-                    <td>BANANAS31</td>
-                    <td>6 mo</td>
-                    <td>52</td>
-                    <td class="green">39 (75%)</td>
-                    <td>12 (23%)</td>
-                    <td>1</td>
-                    <td class="green">$4,323</td>
-                    <td>2.02</td>
-                </tr>
-                <tr>
-                    <td>ERA</td>
-                    <td>6 mo</td>
-                    <td>29</td>
-                    <td class="green">26 (90%)</td>
-                    <td>1 (3%)</td>
-                    <td>2</td>
-                    <td class="green">$5,646</td>
-                    <td>1.13</td>
-                </tr>
-                <tr>
-                    <td>NOT</td>
-                    <td>6 mo</td>
-                    <td>27</td>
-                    <td class="green">16 (59%)</td>
-                    <td>6 (22%)</td>
-                    <td>5</td>
-                    <td class="green">$5,368</td>
-                    <td>1.05</td>
-                </tr>
-                <tr style="opacity: 0.7;">
-                    <td>TON*</td>
-                    <td>6 mo</td>
-                    <td>14</td>
-                    <td class="green">13 (93%)</td>
-                    <td>0</td>
-                    <td>1</td>
-                    <td class="green">$866</td>
-                    <td>0.54</td>
-                </tr>
-                <tr style="font-weight: bold; background: #1a1a2e;">
-                    <td>TOTAL</td>
-                    <td>-</td>
-                    <td>197</td>
-                    <td class="green">145 (74%)</td>
-                    <td>41 (21%)</td>
-                    <td>11 (6%)</td>
-                    <td class="green">$22,292</td>
-                    <td>1.47 avg</td>
-                </tr>
-            </table>
-
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <div class="stat-value green">$22,292</div>
-                    <div class="stat-label">Total PnL (6 tokens)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">94%</div>
-                    <div class="stat-label">Closure Rate</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">197</div>
-                    <div class="stat-label">Total Trades</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">1.47</div>
-                    <div class="stat-label">Avg Trades/Week</div>
-                </div>
-            </div>
-
-            <div class="warning" style="margin-top: 15px;">
-                <strong>*TON Note:</strong> TON показал низкую активность (0.54 trades/week vs 1.47 avg) из-за меньшей волатильности. Так как TON имеет меньшую волатильность, необходимо подстраивать настройки под него (например, снизить порог детекции пампа с 7% до 5%), тогда и результат будет лучше.
-            </div>
-
-            <div class="highlight" style="margin-top: 15px;">
-                <strong>Key Insight:</strong> Только <strong>11 позиций (6%)</strong> остались незакрытыми. Из них большинство находятся в профите (особенно по NOT: +$4,061). Это показывает <strong>крайне высокую эффективность стратегии</strong> — 94% позиций высвобождаются либо с профитом, либо в безубыток.
-            </div>
-        </div>
-
-        <div class="section">
-            <h3>Protection Analysis: BANANAS31 Nov 16-17</h3>
-            <p>BANANAS31 experienced a <strong>92% pump</strong> on November 16-17 ($0.002 -> $0.006). Тройная защита заблокировала большинство входов:</p>
-
-            <table>
-                <tr>
-                    <th>Time</th>
-                    <th>Filter</th>
-                    <th>Result</th>
-                </tr>
-                <tr>
-                    <td>Nov 16 16:00</td>
-                    <td>Price Zone 33%</td>
-                    <td class="red">BLOCKED (need >50%)</td>
-                </tr>
-                <tr>
-                    <td>Nov 16 17:00</td>
-                    <td>HH Breach Check</td>
-                    <td class="red">BLOCKED (all HH already breached)</td>
-                </tr>
-                <tr>
-                    <td>Nov 16 18:00</td>
-                    <td>HH Breach Check</td>
-                    <td class="red">BLOCKED (all HH already breached)</td>
-                </tr>
-                <tr>
-                    <td>Nov 16 19:00+</td>
-                    <td>Flash Crash 30%</td>
-                    <td class="red">PROTECTION (extreme volatility)</td>
-                </tr>
-            </table>
-
-            <div class="highlight">
-                <strong>Three-Layer Protection:</strong>
-                <ol style="margin: 10px 0 0 20px; padding: 0;">
-                    <li><strong>Price Zone Filter (<50%)</strong> - blocked entry at pump start</li>
-                    <li><strong>HH Breach Filter</strong> - old resistance levels already broken, no valid entries</li>
-                    <li><strong>Flash Crash Protection</strong> - 30%+ volatility paused all entries for 12h+</li>
-                </ol>
-            </div>
-
-            <p style="margin-top: 15px;">Similarly, the October 10 flash crash (5135% move, $0.0001 -> $0.0045) triggered protection events that blocked entries during the extreme volatility.</p>
-        </div>
-
-        <!-- ==================== SUMMARY ==================== -->
-
-        <div class="divider page-break"></div>
-        <h2>Summary Statistics</h2>
-
-        <div class="section">
-            <h3>Strategy V8 - HH + Global Pump Mode (рекомендуемый)</h3>
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <div class="stat-value">197</div>
-                    <div class="stat-label">Total Trades (6 токенов)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">94%</div>
-                    <div class="stat-label">Closure Rate</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">$22,292</div>
-                    <div class="stat-label">Total PnL</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">74%</div>
-                    <div class="stat-label">RETRACE Exits (profit)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">21%</div>
-                    <div class="stat-label">GP Exits (breakeven)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">1.47</div>
-                    <div class="stat-label">Avg Trades/Week</div>
-                </div>
-            </div>
-            <p style="color: #3fb950; font-size: 12px;">Realistic Capital: $10k лимит, $5k на ситуацию, refresh через 4 дня. HH Lookback 45 дней, proximity 6%. Тестировано на 6 токенах (DEXE, BANANAS31, ERA, FLOKI, NOT, TON). Global Pump Mode: 35%+ движение активирует GP, 60% retracement выходит в breakeven.</p>
-        </div>
-
-        <div class="section">
-            <h3>Global Pump Mode — V8 Logic</h3>
-
-            <div class="highlight" style="margin-bottom: 15px;">
-                <strong>Методология бэктеста Global Pump Mode:</strong>
-                <p style="margin: 10px 0;">Так как мы предполагаем, что менеджмент Global Pump Mode будет осуществляться вручную, и это будет предотвращать риск неэффективных входов позиций по обычному моду HH, для успешности бэктеста мы взяли общие стандартные значения:</p>
-                <ul style="margin: 10px 0 0 20px;">
-                    <li><strong>35%</strong> — активация Global Pump Mode</li>
-                    <li><strong>60%</strong> — retracement для высвобождения позиций в безубыток</li>
-                </ul>
-                <p style="margin: 10px 0;">При условии, что RETRACE самого пампа с его High составит более 60%, позиции набранные по HH в точках ниже будут высвобождены в безубыток.</p>
-                <p style="margin: 10px 0; color: #f7931a;"><strong>Стоит подчеркнуть</strong>, что это наиболее приближает нас к реалистичным данным, так как в реальной торговле Global Pump Mode должен будет покрывать набранные до этого трейды по обычному алгоритму HH и значительно повышать среднюю точку входа. Тем самым, при снижении пампа на более чем 60%, можно с большой долей уверенности предположить, что чаще всего капитал, набранный ниже, будет высвобождаться как минимум в безубыток.</p>
-            </div>
-
-            <h4>Статистика закрытия позиций</h4>
-            <div class="stat-grid">
-                <div class="stat-box">
-                    <div class="stat-value">197</div>
-                    <div class="stat-label">Всего позиций</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">145 (74%)</div>
-                    <div class="stat-label">RETRACE (профит)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value">41 (21%)</div>
-                    <div class="stat-label">GP Mode (breakeven)</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-value green">11 (6%)</div>
-                    <div class="stat-label">END (не закрылись)</div>
-                </div>
-            </div>
-
-            <div class="warning" style="margin-top: 15px;">
-                <strong>Ключевой вывод:</strong> Только <strong>11 позиций (~6%)</strong> остались незакрытыми — то есть не было активации Global Pump Mode и при этом не было достаточного отката для закрытия через RETRACE. <strong>Теоретически это показывает крайне высокую эффективность стратегии</strong> — 94% позиций высвобождаются либо с профитом, либо в безубыток. Разумеется, при условии грамотного ручного менеджмента Global Pump Mode и его качественной реализации.
-            </div>
-
-            <div class="highlight" style="margin-top: 15px;">
-                <strong>Важно:</strong> Из 11 END позиций большинство находятся в профите (особенно по NOT), что дополнительно улучшает общий результат.
-            </div>
-        </div>
-
-        <div class="section">
-            <h3>Частота трейдов (Trades per Week)</h3>
-            <p>Медианное количество трейдов на токен в неделю:</p>
-            <table>
-                <tr>
-                    <th>Token</th>
-                    <th>Period</th>
-                    <th>Weeks</th>
-                    <th>Trades</th>
-                    <th>Trades/Week</th>
-                </tr>
-                <tr>
-                    <td>BANANAS31</td>
-                    <td>6 mo</td>
-                    <td>25.7</td>
-                    <td>52</td>
-                    <td class="green"><strong>2.02</strong></td>
-                </tr>
-                <tr>
-                    <td>DEXE</td>
-                    <td>6 mo</td>
-                    <td>25.7</td>
-                    <td>44</td>
-                    <td class="green"><strong>1.71</strong></td>
-                </tr>
-                <tr>
-                    <td>FLOKI</td>
-                    <td>5 mo</td>
-                    <td>21.4</td>
-                    <td>31</td>
-                    <td class="green"><strong>1.45</strong></td>
-                </tr>
-                <tr>
-                    <td>ERA</td>
-                    <td>6 mo</td>
-                    <td>25.7</td>
-                    <td>29</td>
-                    <td><strong>1.13</strong></td>
-                </tr>
-                <tr>
-                    <td>NOT</td>
-                    <td>6 mo</td>
-                    <td>25.7</td>
-                    <td>27</td>
-                    <td><strong>1.05</strong></td>
-                </tr>
-                <tr style="opacity: 0.7;">
-                    <td>TON*</td>
-                    <td>6 mo</td>
-                    <td>25.7</td>
-                    <td>14</td>
-                    <td><strong>0.54</strong></td>
-                </tr>
-                <tr style="font-weight: bold; background: #1a1a2e;">
-                    <td colspan="3">Среднее (высоковолатильные)</td>
-                    <td>183</td>
-                    <td class="green"><strong>1.47</strong></td>
-                </tr>
-            </table>
-            <div class="highlight" style="margin-top: 15px;">
-                <strong>Медианная частота: ~1.5 трейда в неделю</strong> на высоковолатильный токен. При торговле 5 высоковолатильными токенами = <strong>~7.5 трейдов в неделю</strong> общая активность. Это умеренная активность, управляемая вручную.
-            </div>
-            <div class="warning" style="margin-top: 10px;">
-                <strong>*TON:</strong> Низкая активность (0.54 trades/week) объясняется меньшей волатильностью крупного токена. Так как TON имеет меньшую волатильность, необходимо подстраивать настройки под него (снизить порог пампа, изменить lookback), тогда результат будет лучше.
-            </div>
-        </div>
-
-        <div class="section">
-            <h3>V8 Exit Types Comparison</h3>
-            <table>
-                <tr>
-                    <th>Metric</th>
-                    <th>RETRACE Exit</th>
-                    <th>Global Pump Exit</th>
-                </tr>
-                <tr>
-                    <td>Trigger</td>
-                    <td>Regular pump (7%+)</td>
-                    <td>Extreme pump (35%+)</td>
-                </tr>
-                <tr>
-                    <td>Exit Condition</td>
-                    <td>60% retracement from movement</td>
-                    <td>60% retracement after GP activation</td>
-                </tr>
-                <tr>
-                    <td>Result</td>
-                    <td class="green">Profit</td>
-                    <td>Breakeven</td>
-                </tr>
-                <tr>
-                    <td>Avg Hold Time</td>
-                    <td>0.5-1.6 days</td>
-                    <td>5-11 days</td>
-                </tr>
-                <tr>
-                    <td>Frequency</td>
-                    <td>74% of trades</td>
-                    <td>21% of trades</td>
-                </tr>
-                <tr>
-                    <td>Capital</td>
-                    <td>Quick turnover</td>
-                    <td>Locked until retracement</td>
-                </tr>
-            </table>
-            <div class="highlight" style="margin-top: 15px;">
-                <strong>Timing Analysis:</strong> Если позиция не закрылась по RETRACE за 4 дня, есть <strong>80% вероятность</strong>, что она закроется через Global Pump Mode в безубыток. Только 6% позиций остаются открытыми без GP и без RETRACE.
-            </div>
-        </div>
-
+<div class="container">
+
+<!-- ==================== HEADER ==================== -->
+<div class="doc-header">
+  <h1>HH mod+global</h1>
+  <div class="subtitle">Торговый бот для Gate.io &mdash; шорт на споте через HH и GP стратегии</div>
+  <div class="badge">v8 &bull; 24/7 &bull; Автоматический</div>
+</div>
+
+<!-- ==================== TOC ==================== -->
+<nav class="toc">
+  <h2>Содержание</h2>
+  <ol>
+    <li><a href="#arch">Архитектура</a></li>
+    <li><a href="#hh">Стратегия HH (Higher High)</a></li>
+    <li><a href="#gp">Стратегия GP (Global Pump)</a></li>
+    <li><a href="#lifecycle">Жизненный цикл позиции</a></li>
+    <li><a href="#exit">Логика выходов</a></li>
+    <li><a href="#capital">Капитал и лимиты</a></li>
+    <li><a href="#recovery">Crash Recovery</a></li>
+    <li><a href="#storage">Хранение данных</a></li>
+    <li><a href="#protection">Защитные механизмы</a></li>
+    <li><a href="#config">Настройки</a></li>
+    <li><a href="#dashboard">Дашборд</a></li>
+    <li><a href="#telegram">Telegram</a></li>
+    <li><a href="#tests">Тестирование</a></li>
+  </ol>
+</nav>
+
+<!-- ==================== 1. ARCHITECTURE ==================== -->
+<section id="arch">
+  <h2>1. Архитектура</h2>
+  <p>Спот-бот для биржи Gate.io. Продаёт токены на локальных максимумах, откупает ниже. Два режима входа &mdash; <strong>HH</strong> (Higher High) и <strong>GP</strong> (Global Pump). Цикл каждые 10 секунд.</p>
+
+  <div class="diagram">SupervisorAgent  (supervisor.py &mdash; главный мозг)
+  │
+  │  Каждые 10 сек:
+  │  1. Рыночные данные     5. GP ордера
+  │  2. Flash crash check   6. Fill detection
+  │  3. Stale ордера        7. Exit management
+  │  4. HH ордера           8. Очистка
+  │
+  ├──► ExitManager          ├──► StateManager
+  │    exit_manager.py      │    state_manager.py
+  │    Лимитные выходы,     │    Thread-safe state,
+  │    трекинг max_high     │    делегирует в SQLite
+  │                         │
+  ├──► GateExchange         └──► SQLite (WAL) + JSON
+  │    exchange.py
+  │    CCXT обёртка
+  │
+  └──► EventBus
+       events.py
+       Pub/Sub для Telegram</div>
+
+  <h3>Файлы и ответственности</h3>
+  <table>
+    <tr><th>Файл</th><th>Строк</th><th>Что делает</th></tr>
+    <tr><td><code>supervisor.py</code></td><td>~1400</td><td>Главный цикл. HH/GP ордера, детекция филлов, crash recovery</td></tr>
+    <tr><td><code>exit_manager.py</code></td><td>~300</td><td>Логика выходов: лимитные ордера, трекинг max_high, смена режимов</td></tr>
+    <tr><td><code>state_manager.py</code></td><td>~500</td><td>Потокобезопасное хранилище. Делегирует позиции/ордера в SQLite</td></tr>
+    <tr><td><code>database.py</code></td><td>~870</td><td>SQLite с WAL. Позиции, ордера, история, GP state</td></tr>
+    <tr><td><code>strategy.py</code></td><td>~550</td><td>Чистые функции: поиск HH, расчёт exit level, GP grid</td></tr>
+    <tr><td><code>models.py</code></td><td>~225</td><td>Dataclass-ы: Position, PendingOrder, MarketState</td></tr>
+    <tr><td><code>exchange.py</code></td><td>&mdash;</td><td>CCXT обёртка для Gate.io API</td></tr>
+    <tr><td><code>settings.py</code></td><td>~240</td><td>config.json с hot reload и dot notation</td></tr>
+    <tr><td><code>events.py</code></td><td>~180</td><td>Pub/Sub EventBus для коммуникации между компонентами</td></tr>
+  </table>
+</section>
+
+<hr>
+
+<!-- ==================== 2. HH STRATEGY ==================== -->
+<section id="hh">
+  <h2>2. Стратегия HH (Higher High)</h2>
+
+  <h3>Идея</h3>
+  <p>Шорт на споте. Токены уже куплены и лежат на балансе. Бот <strong>продаёт</strong> их на уровнях Higher High (локальные максимумы), а потом <strong>откупает дешевле</strong> через лимитный ордер.</p>
+
+  <h3>Поиск уровней HH</h3>
+  <ol>
+    <li>Берём <strong>1080 часовых свечей</strong> (~45 дней)</li>
+    <li>Считаем недельный диапазон (low/high за последние 8 дней)</li>
+    <li>Ищем свинг-хаи: свеча выше 2-х соседей слева и 2-х справа</li>
+    <li>Фильтры:
+      <ul>
+        <li>Выше текущей цены, но <strong>не дальше 10%</strong></li>
+        <li>В <strong>верхних 50%+</strong> недельного диапазона</li>
+        <li>Не был пробит последующими свечами</li>
+      </ul>
+    </li>
+    <li>Берём <strong>максимум 3</strong> уровня, сортируем по цене</li>
+  </ol>
+
+  <h3>Размещение ордеров</h3>
+  <div class="callout">
+    <strong>Бюджет:</strong> 50% от бюджета токена делится поровну на все видимые HH уровни.
+  </div>
+  <table>
+    <tr><th>Видимых HH</th><th>Размер ордера</th><th>Пример ($60 бюджет)</th></tr>
+    <tr><td>1</td><td>100% от 50%</td><td>$30 на 1 ордер</td></tr>
+    <tr><td>2</td><td>50% от 50%</td><td>$15 на каждый</td></tr>
+    <tr><td>3</td><td>33% от 50%</td><td>$10 на каждый</td></tr>
+  </table>
+  <ul>
+    <li><strong>Лимит:</strong> максимум 3 НОВЫХ HH ордера за 12 часов (rate limit)</li>
+    <li><strong>Минимум:</strong> $3 на ордер (лимит Gate.io)</li>
+    <li><strong>Тип:</strong> limit sell (продаём токен на хае)</li>
+  </ul>
+
+  <h3>Динамическое перераспределение</h3>
+  <p>Если набор HH уровней изменился (уровень пробит или появился новый):</p>
+  <ol>
+    <li>Отменить все текущие HH ордера</li>
+    <li>Пересчитать бюджет с учётом уже открытых позиций</li>
+    <li>Разместить новые ордера с правильными размерами</li>
+    <li>Проверить 12ч лимит <strong>ПОСЛЕ</strong> отмены (отменённые не считаются)</li>
+  </ol>
+
+  <h3>Stale-ордера</h3>
+  <p>Если цена упала больше чем на <strong>10%</strong> ниже HH ордера &mdash; ордер отменяется. Когда цена вернётся, <code>manage_proactive_orders</code> разместит новый.</p>
+</section>
+
+<hr>
+
+<!-- ==================== 3. GP STRATEGY ==================== -->
+<section id="gp">
+  <h2>3. Стратегия GP (Global Pump)</h2>
+
+  <h3>Идея</h3>
+  <p>Сетка sell-ордеров на случай сильного пампа. Размещается <strong>ВЫШЕ</strong> текущей цены (от +20% до +50%). Если токен сильно вырастет &mdash; ордера исполнятся и мы продадим на пике.</p>
+
+  <h3>Параметры сетки</h3>
+  <table>
+    <tr><th>Параметр</th><th>По умолчанию</th><th>Описание</th></tr>
+    <tr><td>Base price</td><td>текущая цена</td><td>Основа для расчёта сетки</td></tr>
+    <tr><td>Start %</td><td>+20%</td><td>Начало сетки выше base</td></tr>
+    <tr><td>End %</td><td>+50%</td><td>Конец сетки выше base</td></tr>
+    <tr><td>Количество</td><td>10</td><td>Число ордеров в сетке</td></tr>
+    <tr><td>Бюджет</td><td>$40</td><td>Суммарный бюджет</td></tr>
+    <tr><td>Минимум</td><td>$3</td><td>Меньшие ордера отфильтровываются</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <strong>Вес экспоненциальный:</strong> больший бюджет на верхние уровни.
+  </div>
+
+  <h3>Обновление сетки</h3>
+  <ol>
+    <li><strong>Ежедневное</strong> &mdash; в 12:00 по Лиссабону. Новый base_price = текущая цена. Старые ордера отменяются, ставятся новые</li>
+    <li><strong>По изменению настроек</strong> &mdash; если в дашборде поменяли Start%, End% или бюджет &mdash; сетка пересобирается с <strong>СОХРАНЁННЫМ</strong> base_price (не текущей ценой)</li>
+    <li>Между обновлениями сетка <strong>не трогается</strong></li>
+  </ol>
+
+  <h3>Атомарность</h3>
+  <p>После размещения <strong>КАЖДОГО</strong> ордера GP state сохраняется в SQLite. Если бот упадёт посреди построения сетки &mdash; при перезапуске он знает какие ордера уже стоят.</p>
+</section>
+
+<hr>
+
+<!-- ==================== 4. LIFECYCLE ==================== -->
+<section id="lifecycle">
+  <h2>4. Жизненный цикл позиции</h2>
+
+  <div class="flow">
+    <div class="flow-chain">
+      <span class="flow-step pending">PENDING</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step open">OPEN</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step closing">CLOSING</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step closed">CLOSED</span>
+      <span class="flow-arrow">&rarr;</span>
+      <span class="flow-step archive">trade_history</span>
     </div>
+  </div>
 
-    <script>
-        // ERA Nov 10-30 Data (4H)
-        const eraNovData = [{"time": 1762732800, "open": 0.2604, "high": 0.2641, "low": 0.2566, "close": 0.2592}, {"time": 1762747200, "open": 0.2597, "high": 0.2597, "low": 0.2535, "close": 0.2567}, {"time": 1762761600, "open": 0.2563, "high": 0.26, "low": 0.2539, "close": 0.2592}, {"time": 1762776000, "open": 0.2593, "high": 0.2647, "low": 0.2557, "close": 0.257}, {"time": 1762790400, "open": 0.2573, "high": 0.2605, "low": 0.2508, "close": 0.2547}, {"time": 1762804800, "open": 0.2549, "high": 0.2612, "low": 0.2532, "close": 0.2596}, {"time": 1762819200, "open": 0.2598, "high": 0.2607, "low": 0.2532, "close": 0.2593}, {"time": 1762833600, "open": 0.2595, "high": 0.2825, "low": 0.2539, "close": 0.2632}, {"time": 1762848000, "open": 0.2632, "high": 0.2657, "low": 0.244, "close": 0.2478}, {"time": 1762862400, "open": 0.2478, "high": 0.2524, "low": 0.2445, "close": 0.2459}, {"time": 1762876800, "open": 0.2459, "high": 0.2519, "low": 0.242, "close": 0.2422}, {"time": 1762891200, "open": 0.2423, "high": 0.2444, "low": 0.2379, "close": 0.2382}, {"time": 1762905600, "open": 0.2386, "high": 0.2422, "low": 0.2347, "close": 0.2403}, {"time": 1762920000, "open": 0.2403, "high": 0.2423, "low": 0.2371, "close": 0.2374}, {"time": 1762934400, "open": 0.2374, "high": 0.246, "low": 0.237, "close": 0.2434}, {"time": 1762948800, "open": 0.2431, "high": 0.2476, "low": 0.2364, "close": 0.2374}, {"time": 1762963200, "open": 0.2374, "high": 0.2381, "low": 0.228, "close": 0.2315}, {"time": 1762977600, "open": 0.2313, "high": 0.2391, "low": 0.2311, "close": 0.2364}, {"time": 1762992000, "open": 0.2364, "high": 0.2412, "low": 0.2331, "close": 0.2387}, {"time": 1763006400, "open": 0.2389, "high": 0.2421, "low": 0.2368, "close": 0.2408}, {"time": 1763020800, "open": 0.2406, "high": 0.2441, "low": 0.2393, "close": 0.242}, {"time": 1763035200, "open": 0.2421, "high": 0.2435, "low": 0.236, "close": 0.2379}, {"time": 1763049600, "open": 0.2375, "high": 0.2563, "low": 0.2332, "close": 0.2344}, {"time": 1763064000, "open": 0.2342, "high": 0.2397, "low": 0.2327, "close": 0.2368}, {"time": 1763078400, "open": 0.2367, "high": 0.2367, "low": 0.2289, "close": 0.2292}, {"time": 1763092800, "open": 0.2292, "high": 0.2299, "low": 0.2146, "close": 0.2239}, {"time": 1763107200, "open": 0.2241, "high": 0.2241, "low": 0.2194, "close": 0.2201}, {"time": 1763121600, "open": 0.2202, "high": 0.2274, "low": 0.2163, "close": 0.2252}, {"time": 1763136000, "open": 0.2253, "high": 0.2307, "low": 0.2242, "close": 0.2302}, {"time": 1763150400, "open": 0.2301, "high": 0.2307, "low": 0.2162, "close": 0.2194}, {"time": 1763164800, "open": 0.2193, "high": 0.2291, "low": 0.2191, "close": 0.2277}, {"time": 1763179200, "open": 0.2278, "high": 0.2292, "low": 0.2225, "close": 0.2231}, {"time": 1763193600, "open": 0.2233, "high": 0.2243, "low": 0.2204, "close": 0.2233}, {"time": 1763208000, "open": 0.2229, "high": 0.2262, "low": 0.2228, "close": 0.2241}, {"time": 1763222400, "open": 0.2241, "high": 0.2272, "low": 0.2222, "close": 0.2268}, {"time": 1763236800, "open": 0.2268, "high": 0.2283, "low": 0.223, "close": 0.2269}, {"time": 1763251200, "open": 0.2265, "high": 0.2272, "low": 0.2216, "close": 0.2267}, {"time": 1763265600, "open": 0.2268, "high": 0.243, "low": 0.2258, "close": 0.2388}, {"time": 1763280000, "open": 0.239, "high": 0.2658, "low": 0.2363, "close": 0.256}, {"time": 1763294400, "open": 0.2559, "high": 0.272, "low": 0.2366, "close": 0.2371}, {"time": 1763308800, "open": 0.2372, "high": 0.238, "low": 0.2285, "close": 0.2317}, {"time": 1763323200, "open": 0.2314, "high": 0.2338, "low": 0.2243, "close": 0.2325}, {"time": 1763337600, "open": 0.2325, "high": 0.2689, "low": 0.225, "close": 0.2595}, {"time": 1763352000, "open": 0.2596, "high": 0.2781, "low": 0.2545, "close": 0.2579}, {"time": 1763366400, "open": 0.258, "high": 0.2755, "low": 0.2564, "close": 0.258}, {"time": 1763380800, "open": 0.2581, "high": 0.2599, "low": 0.2457, "close": 0.2491}, {"time": 1763395200, "open": 0.2491, "high": 0.2496, "low": 0.2359, "close": 0.2435}, {"time": 1763409600, "open": 0.2435, "high": 0.2573, "low": 0.2361, "close": 0.2569}, {"time": 1763424000, "open": 0.257, "high": 0.2602, "low": 0.2349, "close": 0.2464}, {"time": 1763438400, "open": 0.2465, "high": 0.2485, "low": 0.2405, "close": 0.2406}, {"time": 1763452800, "open": 0.2406, "high": 0.2485, "low": 0.2393, "close": 0.2484}, {"time": 1763467200, "open": 0.2483, "high": 0.2637, "low": 0.2441, "close": 0.2497}, {"time": 1763481600, "open": 0.2495, "high": 0.2579, "low": 0.2495, "close": 0.2549}, {"time": 1763496000, "open": 0.2547, "high": 0.2547, "low": 0.2488, "close": 0.2488}, {"time": 1763510400, "open": 0.249, "high": 0.2493, "low": 0.241, "close": 0.2412}, {"time": 1763524800, "open": 0.2412, "high": 0.2425, "low": 0.2343, "close": 0.2401}, {"time": 1763539200, "open": 0.2401, "high": 0.2485, "low": 0.2401, "close": 0.248}, {"time": 1763553600, "open": 0.248, "high": 0.2483, "low": 0.2325, "close": 0.2333}, {"time": 1763568000, "open": 0.2333, "high": 0.2359, "low": 0.2256, "close": 0.228}, {"time": 1763582400, "open": 0.228, "high": 0.2407, "low": 0.2278, "close": 0.2404}, {"time": 1763596800, "open": 0.2403, "high": 0.2422, "low": 0.2376, "close": 0.2417}, {"time": 1763611200, "open": 0.2421, "high": 0.2479, "low": 0.2399, "close": 0.2442}, {"time": 1763625600, "open": 0.2442, "high": 0.2457, "low": 0.2422, "close": 0.2456}, {"time": 1763640000, "open": 0.2458, "high": 0.2545, "low": 0.2446, "close": 0.2446}, {"time": 1763654400, "open": 0.2445, "high": 0.2455, "low": 0.2363, "close": 0.2376}, {"time": 1763668800, "open": 0.2376, "high": 0.2445, "low": 0.2341, "close": 0.2395}, {"time": 1763683200, "open": 0.2395, "high": 0.2562, "low": 0.237, "close": 0.2547}, {"time": 1763697600, "open": 0.2547, "high": 0.2755, "low": 0.2528, "close": 0.2596}, {"time": 1763712000, "open": 0.2594, "high": 0.2658, "low": 0.2479, "close": 0.2499}, {"time": 1763726400, "open": 0.2501, "high": 0.275, "low": 0.2439, "close": 0.2632}, {"time": 1763740800, "open": 0.2634, "high": 0.2746, "low": 0.249, "close": 0.2635}, {"time": 1763755200, "open": 0.2634, "high": 0.2635, "low": 0.2508, "close": 0.2622}, {"time": 1763769600, "open": 0.2621, "high": 0.2962, "low": 0.254, "close": 0.2656}, {"time": 1763784000, "open": 0.2653, "high": 0.2672, "low": 0.2464, "close": 0.2538}, {"time": 1763798400, "open": 0.2539, "high": 0.2575, "low": 0.2455, "close": 0.2528}, {"time": 1763812800, "open": 0.2526, "high": 0.2595, "low": 0.247, "close": 0.2525}, {"time": 1763827200, "open": 0.2524, "high": 0.2732, "low": 0.2524, "close": 0.2722}, {"time": 1763841600, "open": 0.2723, "high": 0.2738, "low": 0.2601, "close": 0.264}, {"time": 1763856000, "open": 0.264, "high": 0.2686, "low": 0.2553, "close": 0.2589}, {"time": 1763870400, "open": 0.2589, "high": 0.262, "low": 0.2518, "close": 0.2526}, {"time": 1763884800, "open": 0.2528, "high": 0.2854, "low": 0.2523, "close": 0.2766}, {"time": 1763899200, "open": 0.2766, "high": 0.2798, "low": 0.2625, "close": 0.2667}, {"time": 1763913600, "open": 0.2666, "high": 0.2703, "low": 0.2627, "close": 0.2652}, {"time": 1763928000, "open": 0.265, "high": 0.273, "low": 0.2627, "close": 0.2666}, {"time": 1763942400, "open": 0.2666, "high": 0.3026, "low": 0.2611, "close": 0.2795}, {"time": 1763956800, "open": 0.2794, "high": 0.2842, "low": 0.2724, "close": 0.2815}, {"time": 1763971200, "open": 0.2816, "high": 0.2819, "low": 0.271, "close": 0.2761}, {"time": 1763985600, "open": 0.2757, "high": 0.2918, "low": 0.2734, "close": 0.2792}, {"time": 1764000000, "open": 0.2793, "high": 0.2844, "low": 0.2746, "close": 0.2778}, {"time": 1764014400, "open": 0.278, "high": 0.2847, "low": 0.2768, "close": 0.2834}, {"time": 1764028800, "open": 0.2833, "high": 0.2891, "low": 0.2657, "close": 0.2725}, {"time": 1764043200, "open": 0.2727, "high": 0.2788, "low": 0.2673, "close": 0.2674}, {"time": 1764057600, "open": 0.2678, "high": 0.2703, "low": 0.2656, "close": 0.2677}, {"time": 1764072000, "open": 0.2679, "high": 0.2746, "low": 0.2661, "close": 0.2703}, {"time": 1764086400, "open": 0.2704, "high": 0.2749, "low": 0.2686, "close": 0.2711}, {"time": 1764100800, "open": 0.2715, "high": 0.2755, "low": 0.2698, "close": 0.2741}, {"time": 1764115200, "open": 0.274, "high": 0.2741, "low": 0.2618, "close": 0.2646}, {"time": 1764129600, "open": 0.2645, "high": 0.2764, "low": 0.2645, "close": 0.2681}, {"time": 1764144000, "open": 0.2683, "high": 0.2686, "low": 0.2592, "close": 0.2631}, {"time": 1764158400, "open": 0.263, "high": 0.2684, "low": 0.26, "close": 0.2618}, {"time": 1764172800, "open": 0.2621, "high": 0.27, "low": 0.262, "close": 0.2687}, {"time": 1764187200, "open": 0.2684, "high": 0.2737, "low": 0.2671, "close": 0.2718}, {"time": 1764201600, "open": 0.2717, "high": 0.2772, "low": 0.2666, "close": 0.2675}, {"time": 1764216000, "open": 0.2674, "high": 0.2715, "low": 0.2673, "close": 0.2688}, {"time": 1764230400, "open": 0.2686, "high": 0.2726, "low": 0.2669, "close": 0.2689}, {"time": 1764244800, "open": 0.2689, "high": 0.2702, "low": 0.2647, "close": 0.2698}, {"time": 1764259200, "open": 0.2697, "high": 0.2795, "low": 0.2694, "close": 0.2779}, {"time": 1764273600, "open": 0.2778, "high": 0.2807, "low": 0.2731, "close": 0.2744}, {"time": 1764288000, "open": 0.2744, "high": 0.2846, "low": 0.2741, "close": 0.2759}, {"time": 1764302400, "open": 0.2757, "high": 0.2861, "low": 0.2741, "close": 0.2747}, {"time": 1764316800, "open": 0.2744, "high": 0.2764, "low": 0.2704, "close": 0.2724}, {"time": 1764331200, "open": 0.2724, "high": 0.283, "low": 0.2718, "close": 0.2825}, {"time": 1764345600, "open": 0.2825, "high": 0.2852, "low": 0.2735, "close": 0.2818}, {"time": 1764360000, "open": 0.2821, "high": 0.2865, "low": 0.2784, "close": 0.2833}, {"time": 1764374400, "open": 0.2832, "high": 0.2852, "low": 0.2767, "close": 0.2794}, {"time": 1764388800, "open": 0.2793, "high": 0.2795, "low": 0.2612, "close": 0.262}, {"time": 1764403200, "open": 0.2619, "high": 0.2778, "low": 0.2615, "close": 0.2664}, {"time": 1764417600, "open": 0.2664, "high": 0.2672, "low": 0.2615, "close": 0.2628}, {"time": 1764432000, "open": 0.2626, "high": 0.2627, "low": 0.2575, "close": 0.2596}, {"time": 1764446400, "open": 0.2594, "high": 0.2631, "low": 0.2589, "close": 0.2602}, {"time": 1764460800, "open": 0.2601, "high": 0.2614, "low": 0.249, "close": 0.2509}, {"time": 1764475200, "open": 0.251, "high": 0.2519, "low": 0.2387, "close": 0.2438}, {"time": 1764489600, "open": 0.2438, "high": 0.2477, "low": 0.2426, "close": 0.2428}, {"time": 1764504000, "open": 0.2428, "high": 0.2493, "low": 0.242, "close": 0.2453}, {"time": 1764518400, "open": 0.2453, "high": 0.2594, "low": 0.2448, "close": 0.2546}, {"time": 1764532800, "open": 0.254, "high": 0.2557, "low": 0.2487, "close": 0.2497}];
+  <h3>Вход (fill detection)</h3>
+  <p>Каждый цикл <code>check_order_fills()</code> проверяет pending ордера:</p>
+  <ul>
+    <li><strong>EXIT ордера пропускаются</strong> &mdash; ими занимается ExitManager</li>
+    <li>Для HH/GP: запрос <code>exchange.get_order()</code> &rarr; проверка <code>filled</code> и <code>status</code></li>
+  </ul>
 
-        // Trade markers for ERA Nov - precise entries
-        const eraNovMarkers = [
-            // Nov 22 trade 1
-            {time: 1763352000, position: 'aboveBar', color: '#f23645', shape: 'arrowDown', text: 'SELL $0.2781'},
-            {time: 1763380800, position: 'belowBar', color: '#089981', shape: 'arrowUp', text: 'BUY $0.2648'},
-            // Nov 22 trade 2
-            {time: 1763352000, position: 'aboveBar', color: '#f23645', shape: 'arrowDown', text: 'SELL $0.2825'},
-            // Nov 24 trades (3 entries, quick exit)
-            {time: 1763769600, position: 'aboveBar', color: '#f23645', shape: 'arrowDown', text: 'SELL $0.2962'},
-            {time: 1763769600, position: 'aboveBar', color: '#f23645', shape: 'arrowDown', text: 'SELL $0.2854'},
-            {time: 1763769600, position: 'aboveBar', color: '#f23645', shape: 'arrowDown', text: 'SELL $0.2798'},
-            {time: 1763784000, position: 'belowBar', color: '#089981', shape: 'arrowUp', text: 'BUY $0.2652 (3 pos)'},
-            // Nov 24 late trade
-            {time: 1763884800, position: 'aboveBar', color: '#f23645', shape: 'arrowDown', text: 'SELL $0.2854'},
-            {time: 1763899200, position: 'belowBar', color: '#089981', shape: 'arrowUp', text: 'BUY $0.2777'}
-        ];
+  <div class="grid-2">
+    <div class="card">
+      <h4>Partial fill</h4>
+      <p><em>status=open, filled &gt; 0</em></p>
+      <ul>
+        <li>Создаётся позиция на исполненную часть</li>
+        <li><code>pump_low</code> берётся СЕЙЧАС (min за 13 свечей)</li>
+        <li>HH: сразу размещается exit ордер</li>
+        <li>pending order обновляется с новым <code>filled_tokens</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Full fill</h4>
+      <p><em>status=closed</em></p>
+      <ul>
+        <li>Обрабатывается оставшийся остаток</li>
+        <li>Ордер удаляется из pending</li>
+        <li>Удаление гарантировано через <code>finally</code></li>
+      </ul>
+    </div>
+  </div>
 
-        // ERA Jan 20-27 Data
-        const eraJanData = [{"time": 1768867200, "open": 0.2065, "high": 0.2065, "low": 0.2032, "close": 0.2041}, {"time": 1768881600, "open": 0.2041, "high": 0.2057, "low": 0.201, "close": 0.2032}, {"time": 1768896000, "open": 0.2032, "high": 0.2045, "low": 0.2018, "close": 0.2031}, {"time": 1768910400, "open": 0.203, "high": 0.2041, "low": 0.1998, "close": 0.2011}, {"time": 1768924800, "open": 0.2011, "high": 0.202, "low": 0.1946, "close": 0.1967}, {"time": 1768939200, "open": 0.1967, "high": 0.1984, "low": 0.1938, "close": 0.1946}, {"time": 1768953600, "open": 0.1945, "high": 0.1991, "low": 0.1941, "close": 0.1986}, {"time": 1768968000, "open": 0.1985, "high": 0.2005, "low": 0.198, "close": 0.1994}, {"time": 1768982400, "open": 0.1994, "high": 0.2003, "low": 0.1969, "close": 0.1974}, {"time": 1768996800, "open": 0.1975, "high": 0.1998, "low": 0.1943, "close": 0.1991}, {"time": 1769011200, "open": 0.1991, "high": 0.2004, "low": 0.1921, "close": 0.2}, {"time": 1769025600, "open": 0.2001, "high": 0.2022, "low": 0.1984, "close": 0.2001}, {"time": 1769040000, "open": 0.2002, "high": 0.2022, "low": 0.1998, "close": 0.2012}, {"time": 1769054400, "open": 0.2013, "high": 0.2015, "low": 0.1984, "close": 0.1985}, {"time": 1769068800, "open": 0.1986, "high": 0.2018, "low": 0.1986, "close": 0.2001}, {"time": 1769083200, "open": 0.2001, "high": 0.2006, "low": 0.1941, "close": 0.196}, {"time": 1769097600, "open": 0.1961, "high": 0.1989, "low": 0.1961, "close": 0.1982}, {"time": 1769112000, "open": 0.1981, "high": 0.1986, "low": 0.1966, "close": 0.1977}, {"time": 1769126400, "open": 0.1977, "high": 0.2035, "low": 0.1964, "close": 0.2026}, {"time": 1769140800, "open": 0.2026, "high": 0.2113, "low": 0.2023, "close": 0.209}, {"time": 1769155200, "open": 0.2089, "high": 0.2108, "low": 0.2049, "close": 0.2089}, {"time": 1769169600, "open": 0.2089, "high": 0.2089, "low": 0.2034, "close": 0.2061}, {"time": 1769184000, "open": 0.2062, "high": 0.2096, "low": 0.2035, "close": 0.2041}, {"time": 1769198400, "open": 0.2039, "high": 0.2058, "low": 0.2023, "close": 0.2047}, {"time": 1769212800, "open": 0.2047, "high": 0.2139, "low": 0.2039, "close": 0.2123}, {"time": 1769227200, "open": 0.2124, "high": 0.2198, "low": 0.2096, "close": 0.2143}, {"time": 1769241600, "open": 0.2142, "high": 0.2214, "low": 0.2118, "close": 0.2203}, {"time": 1769256000, "open": 0.2204, "high": 0.2296, "low": 0.2164, "close": 0.2256}, {"time": 1769270400, "open": 0.2258, "high": 0.2321, "low": 0.2166, "close": 0.2182}, {"time": 1769284800, "open": 0.2182, "high": 0.2254, "low": 0.2182, "close": 0.2244}, {"time": 1769299200, "open": 0.2245, "high": 0.2672, "low": 0.221, "close": 0.2392}, {"time": 1769313600, "open": 0.2392, "high": 0.2604, "low": 0.2317, "close": 0.2538}, {"time": 1769328000, "open": 0.2536, "high": 0.298, "low": 0.2391, "close": 0.2397}, {"time": 1769342400, "open": 0.2396, "high": 0.2431, "low": 0.2214, "close": 0.2259}, {"time": 1769356800, "open": 0.2258, "high": 0.2264, "low": 0.2139, "close": 0.2159}, {"time": 1769371200, "open": 0.2158, "high": 0.2179, "low": 0.2095, "close": 0.2126}, {"time": 1769385600, "open": 0.2126, "high": 0.2167, "low": 0.2068, "close": 0.2116}, {"time": 1769400000, "open": 0.2117, "high": 0.2191, "low": 0.21, "close": 0.2119}, {"time": 1769414400, "open": 0.2118, "high": 0.2133, "low": 0.2073, "close": 0.2078}, {"time": 1769428800, "open": 0.2078, "high": 0.2102, "low": 0.205, "close": 0.2075}, {"time": 1769443200, "open": 0.2075, "high": 0.2075, "low": 0.2064, "close": 0.207}];
+  <h3>Закрытие</h3>
+  <p>Когда exit ордер исполнен (<code>status=closed</code>):</p>
+  <ol>
+    <li>Позиция закрывается (<code>status=CLOSED</code>, <code>exit_fill_price</code> записывается)</li>
+    <li>HH капитал освобождается (для новых ордеров)</li>
+    <li>Событие <code>POSITION_CLOSED</code> для Telegram уведомления</li>
+  </ol>
 
-        // Global pump order levels for ERA
-        const eraGlobalPumpOrders = [
-            {price: 0.2672, filled: true},
-            {price: 0.2719, filled: true},
-            {price: 0.2767, filled: true},
-            {price: 0.2814, filled: true},
-            {price: 0.2861, filled: true},
-            {price: 0.2908, filled: true},
-            {price: 0.2956, filled: true},
-            {price: 0.3003, filled: false},
-            {price: 0.3050, filled: false},
-            {price: 0.3097, filled: false}
-        ];
+  <h3>Архивация</h3>
+  <p><code>remove_closed_positions()</code> переносит закрытые позиции в таблицу <code>trade_history</code> с рассчитанным PnL.</p>
+</section>
 
-        // BANANAS Nov 15-28 Data
-        const bananaNovData = [{"time": 1763164800, "open": 0.002241, "high": 0.002341, "low": 0.00224, "close": 0.002329}, {"time": 1763179200, "open": 0.002331, "high": 0.002359, "low": 0.00232, "close": 0.002326}, {"time": 1763193600, "open": 0.002328, "high": 0.002331, "low": 0.002289, "close": 0.002313}, {"time": 1763208000, "open": 0.002312, "high": 0.002422, "low": 0.00231, "close": 0.002392}, {"time": 1763222400, "open": 0.002391, "high": 0.002453, "low": 0.002369, "close": 0.002404}, {"time": 1763236800, "open": 0.002404, "high": 0.002412, "low": 0.002352, "close": 0.002378}, {"time": 1763251200, "open": 0.002378, "high": 0.002412, "low": 0.002345, "close": 0.002391}, {"time": 1763265600, "open": 0.002386, "high": 0.002391, "low": 0.002361, "close": 0.002386}, {"time": 1763280000, "open": 0.002385, "high": 0.00241, "low": 0.002309, "close": 0.002343}, {"time": 1763294400, "open": 0.002342, "high": 0.002355, "low": 0.002295, "close": 0.002307}, {"time": 1763308800, "open": 0.002309, "high": 0.003443, "low": 0.002299, "close": 0.003236}, {"time": 1763323200, "open": 0.003235, "high": 0.003897, "low": 0.002977, "close": 0.003603}, {"time": 1763337600, "open": 0.003604, "high": 0.004404, "low": 0.003388, "close": 0.004157}, {"time": 1763352000, "open": 0.004158, "high": 0.004541, "low": 0.00403, "close": 0.004389}, {"time": 1763366400, "open": 0.004387, "high": 0.004821, "low": 0.004223, "close": 0.004656}, {"time": 1763380800, "open": 0.004657, "high": 0.006022, "low": 0.003809, "close": 0.004197}, {"time": 1763395200, "open": 0.0042, "high": 0.004553, "low": 0.003517, "close": 0.003916}, {"time": 1763409600, "open": 0.003917, "high": 0.003974, "low": 0.003469, "close": 0.003491}, {"time": 1763424000, "open": 0.00349, "high": 0.003549, "low": 0.003155, "close": 0.003229}, {"time": 1763438400, "open": 0.003229, "high": 0.003541, "low": 0.003136, "close": 0.003216}, {"time": 1763452800, "open": 0.003216, "high": 0.0033, "low": 0.003046, "close": 0.003177}, {"time": 1763467200, "open": 0.003176, "high": 0.003343, "low": 0.003141, "close": 0.003291}, {"time": 1763481600, "open": 0.003288, "high": 0.003581, "low": 0.003133, "close": 0.003157}, {"time": 1763496000, "open": 0.003158, "high": 0.0032, "low": 0.00301, "close": 0.003017}, {"time": 1763510400, "open": 0.003016, "high": 0.003029, "low": 0.002868, "close": 0.002901}, {"time": 1763524800, "open": 0.0029, "high": 0.002965, "low": 0.002838, "close": 0.002866}, {"time": 1763539200, "open": 0.002867, "high": 0.002923, "low": 0.002819, "close": 0.002851}, {"time": 1763553600, "open": 0.00285, "high": 0.002869, "low": 0.002656, "close": 0.002697}, {"time": 1763568000, "open": 0.002696, "high": 0.002722, "low": 0.002647, "close": 0.002665}, {"time": 1763582400, "open": 0.002665, "high": 0.002742, "low": 0.002656, "close": 0.002731}, {"time": 1763596800, "open": 0.002729, "high": 0.00278, "low": 0.002703, "close": 0.00271}, {"time": 1763611200, "open": 0.00271, "high": 0.002713, "low": 0.002641, "close": 0.002657}, {"time": 1763625600, "open": 0.002654, "high": 0.002662, "low": 0.002593, "close": 0.002611}, {"time": 1763640000, "open": 0.00261, "high": 0.002675, "low": 0.002564, "close": 0.002575}, {"time": 1763654400, "open": 0.002576, "high": 0.002619, "low": 0.002515, "close": 0.002578}, {"time": 1763668800, "open": 0.002577, "high": 0.002604, "low": 0.002542, "close": 0.002551}, {"time": 1763683200, "open": 0.00255, "high": 0.002606, "low": 0.002529, "close": 0.002541}, {"time": 1763697600, "open": 0.002543, "high": 0.002565, "low": 0.002286, "close": 0.002468}, {"time": 1763712000, "open": 0.002469, "high": 0.002544, "low": 0.002459, "close": 0.002471}, {"time": 1763726400, "open": 0.002469, "high": 0.002512, "low": 0.002395, "close": 0.00244}, {"time": 1763740800, "open": 0.00244, "high": 0.002511, "low": 0.002396, "close": 0.002458}, {"time": 1763755200, "open": 0.00246, "high": 0.00249, "low": 0.002366, "close": 0.002436}, {"time": 1763769600, "open": 0.002435, "high": 0.002489, "low": 0.002413, "close": 0.002447}, {"time": 1763784000, "open": 0.002444, "high": 0.002546, "low": 0.002404, "close": 0.002519}, {"time": 1763798400, "open": 0.002516, "high": 0.002516, "low": 0.002436, "close": 0.002475}, {"time": 1763812800, "open": 0.002474, "high": 0.002503, "low": 0.0024, "close": 0.002465}, {"time": 1763827200, "open": 0.002464, "high": 0.002496, "low": 0.00244, "close": 0.002468}, {"time": 1763841600, "open": 0.002471, "high": 0.002477, "low": 0.002405, "close": 0.002429}, {"time": 1763856000, "open": 0.002428, "high": 0.002439, "low": 0.00238, "close": 0.002406}, {"time": 1763870400, "open": 0.002407, "high": 0.002439, "low": 0.002353, "close": 0.002387}, {"time": 1763884800, "open": 0.002387, "high": 0.002415, "low": 0.002363, "close": 0.002403}, {"time": 1763899200, "open": 0.002403, "high": 0.002534, "low": 0.002381, "close": 0.002533}, {"time": 1763913600, "open": 0.002532, "high": 0.003511, "low": 0.002459, "close": 0.002812}, {"time": 1763928000, "open": 0.002814, "high": 0.003278, "low": 0.00269, "close": 0.003076}, {"time": 1763942400, "open": 0.003074, "high": 0.0035, "low": 0.002934, "close": 0.003019}, {"time": 1763956800, "open": 0.003018, "high": 0.0041, "low": 0.002871, "close": 0.003809}, {"time": 1763971200, "open": 0.00381, "high": 0.003952, "low": 0.003404, "close": 0.003457}, {"time": 1763985600, "open": 0.003456, "high": 0.00416, "low": 0.003252, "close": 0.003908}, {"time": 1764000000, "open": 0.003909, "high": 0.004299, "low": 0.003829, "close": 0.003993}, {"time": 1764014400, "open": 0.003994, "high": 0.004191, "low": 0.00389, "close": 0.004}, {"time": 1764028800, "open": 0.004, "high": 0.004093, "low": 0.003891, "close": 0.004014}, {"time": 1764043200, "open": 0.004012, "high": 0.00406, "low": 0.003846, "close": 0.003895}, {"time": 1764057600, "open": 0.003894, "high": 0.004197, "low": 0.003867, "close": 0.004053}, {"time": 1764072000, "open": 0.004053, "high": 0.004289, "low": 0.00337, "close": 0.003456}, {"time": 1764086400, "open": 0.003456, "high": 0.00365, "low": 0.00341, "close": 0.003541}, {"time": 1764100800, "open": 0.003541, "high": 0.003633, "low": 0.003514, "close": 0.003551}, {"time": 1764115200, "open": 0.00355, "high": 0.00355, "low": 0.003433, "close": 0.003446}, {"time": 1764129600, "open": 0.003446, "high": 0.003915, "low": 0.003441, "close": 0.003746}, {"time": 1764144000, "open": 0.003747, "high": 0.003934, "low": 0.003618, "close": 0.003892}, {"time": 1764158400, "open": 0.003892, "high": 0.004888, "low": 0.003876, "close": 0.004781}, {"time": 1764172800, "open": 0.00478, "high": 0.005933, "low": 0.004736, "close": 0.005796}, {"time": 1764187200, "open": 0.005793, "high": 0.006376, "low": 0.005069, "close": 0.00588}, {"time": 1764201600, "open": 0.005881, "high": 0.00612, "low": 0.005446, "close": 0.005481}, {"time": 1764216000, "open": 0.005483, "high": 0.005861, "low": 0.0051, "close": 0.005457}, {"time": 1764230400, "open": 0.005455, "high": 0.005824, "low": 0.005222, "close": 0.005606}, {"time": 1764244800, "open": 0.005607, "high": 0.00579, "low": 0.005025, "close": 0.005131}, {"time": 1764259200, "open": 0.005128, "high": 0.00516, "low": 0.004751, "close": 0.004997}, {"time": 1764273600, "open": 0.004997, "high": 0.005281, "low": 0.004967, "close": 0.00512}, {"time": 1764288000, "open": 0.005119, "high": 0.005123, "low": 0.004953, "close": 0.004999}, {"time": 1764302400, "open": 0.004999, "high": 0.005016, "low": 0.004068, "close": 0.004253}, {"time": 1764316800, "open": 0.004253, "high": 0.00434, "low": 0.004164, "close": 0.004241}, {"time": 1764331200, "open": 0.00424, "high": 0.004386, "low": 0.003818, "close": 0.004067}, {"time": 1764345600, "open": 0.004067, "high": 0.004466, "low": 0.003994, "close": 0.004257}, {"time": 1764360000, "open": 0.004258, "high": 0.004692, "low": 0.004244, "close": 0.004306}];
+<hr>
 
-        // Global pump order levels for BANANAS
-        const bananaGlobalPumpOrders = [
-            {price: 0.0030, filled: true},
-            {price: 0.0032, filled: true},
-            {price: 0.0033, filled: true},
-            {price: 0.0035, filled: true},
-            {price: 0.0037, filled: true},
-            {price: 0.0039, filled: true},
-            {price: 0.0041, filled: true},
-            {price: 0.0042, filled: true},
-            {price: 0.0044, filled: true},
-            {price: 0.0046, filled: true}
-        ];
+<!-- ==================== 5. EXIT LOGIC ==================== -->
+<section id="exit">
+  <h2>5. Логика выходов</h2>
+  <p>Два режима. Переход <strong>необратимый</strong>.</p>
 
-        // Weekly range levels for Nov 17-30 period (correct values)
-        const weeklyRangeLevels = {
-            low: 0.2250,    // 0%
-            mid: 0.2638,    // 50% - HH Zone starts here
-            weekHigh: 0.3026 // 100%
-        };
+  <div class="grid-2">
+    <div class="card">
+      <h4>retrace_60 (по умолчанию)</h4>
+      <ul>
+        <li>Отслеживается <code>max_high</code></li>
+        <li>Exit = max_high &minus; (max_high &minus; pump_low) &times; 60%</li>
+        <li>При новом хае: отменить старый exit, поставить новый</li>
+        <li>Гарантия: exit &le; entry &times; 0.99</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>profit_1pct (необратимый)</h4>
+      <ul>
+        <li>Активируется когда retrace level &gt; entry &times; 0.99</li>
+        <li>Фиксированный exit = entry &times; 0.99</li>
+        <li><code>max_high</code> больше не трекается</li>
+        <li>Обратно в retrace_60 <strong>не возвращается</strong></li>
+      </ul>
+    </div>
+  </div>
 
-        // Create chart with range lines
-        function createWeeklyRangeChart(containerId, data) {
-            const container = document.getElementById(containerId);
-            const chart = LightweightCharts.createChart(container, {
-                layout: {
-                    background: { type: 'solid', color: '#0d1117' },
-                    textColor: '#c9d1d9',
-                },
-                grid: {
-                    vertLines: { color: '#21262d' },
-                    horzLines: { color: '#21262d' },
-                },
-                crosshair: {
-                    mode: LightweightCharts.CrosshairMode.Normal,
-                },
-                rightPriceScale: { borderColor: '#30363d' },
-                timeScale: {
-                    borderColor: '#30363d',
-                    timeVisible: true,
-                    secondsVisible: false,
-                    fixLeftEdge: true,
-                    fixRightEdge: true
-                },
-            });
+  <div class="callout">
+    <strong>Переключение:</strong> когда 60% retrace сам по себе даёт &gt;1% прибыли &mdash; нет смысла трекать дальше, фиксируем 1%.
+  </div>
 
-            const candlestickSeries = chart.addCandlestickSeries({
-                upColor: '#089981',
-                downColor: '#f23645',
-                borderDownColor: '#f23645',
-                borderUpColor: '#089981',
-                wickDownColor: '#f23645',
-                wickUpColor: '#089981',
-            });
+  <div class="example-block">
+    <div class="title">Пример расчёта</div>
+<pre><code>Entry:     $0.0100 (продали)
+pump_low:  $0.0080
+max_high:  $0.0120
 
-            candlestickSeries.setData(data);
+60% retrace: $0.0120 - ($0.0120 - $0.0080) &times; 0.6 = $0.0096
+Min profit:  $0.0100 &times; 0.99 = $0.0099
 
-            // Add horizontal lines for weekly range zones
-            candlestickSeries.createPriceLine({
-                price: weeklyRangeLevels.low,
-                color: '#f85149',
-                lineWidth: 2,
-                lineStyle: 0,
-                axisLabelVisible: true,
-                title: '0% LOW',
-            });
+$0.0096 &lt; $0.0099 &rarr; exit = $0.0096 (retrace_60 mode)
+PnL: ($0.01 - $0.0096) / $0.01 = <strong>+4%</strong>
 
-            candlestickSeries.createPriceLine({
-                price: weeklyRangeLevels.mid,
-                color: '#3fb950',
-                lineWidth: 2,
-                lineStyle: 0,
-                axisLabelVisible: true,
-                title: '50% HH ZONE',
-            });
+--- max_high растёт до $0.015 ---
 
-            chart.timeScale().fitContent();
-            return chart;
-        }
+60% retrace: $0.015 - ($0.015 - $0.008) &times; 0.6 = $0.0108
+$0.0108 &gt; $0.0099 &rarr; переключение на profit_1pct
+exit = $0.0099, PnL: <strong>+1%</strong></code></pre>
+  </div>
+</section>
 
-        // Create standard chart
-        function createChart(containerId, data, markers, priceLines) {
-            const container = document.getElementById(containerId);
-            const chart = LightweightCharts.createChart(container, {
-                layout: {
-                    background: { type: 'solid', color: '#0d1117' },
-                    textColor: '#c9d1d9',
-                },
-                grid: {
-                    vertLines: { color: '#21262d' },
-                    horzLines: { color: '#21262d' },
-                },
-                crosshair: {
-                    mode: LightweightCharts.CrosshairMode.Normal,
-                },
-                rightPriceScale: { borderColor: '#30363d' },
-                timeScale: {
-                    borderColor: '#30363d',
-                    timeVisible: true,
-                    secondsVisible: false,
-                    fixLeftEdge: true,
-                    fixRightEdge: true
-                },
-            });
+<hr>
 
-            const candlestickSeries = chart.addCandlestickSeries({
-                upColor: '#089981',
-                downColor: '#f23645',
-                borderDownColor: '#f23645',
-                borderUpColor: '#089981',
-                wickDownColor: '#f23645',
-                wickUpColor: '#089981',
-            });
+<!-- ==================== 6. CAPITAL ==================== -->
+<section id="capital">
+  <h2>6. Капитал и лимиты</h2>
 
-            candlestickSeries.setData(data);
+  <h3>HH Isolated Balance</h3>
+  <ul>
+    <li><code>hh_used</code> &mdash; сколько $ заблокировано в HH ордерах</li>
+    <li>Размещение: <code>add_hh_capital(size_usdt)</code></li>
+    <li>Отмена/закрытие: <code>release_hh_capital(size_usdt)</code></li>
+    <li>Защита от минуса: <code>max(0, current &minus; amount)</code></li>
+    <li><code>sync_hh_capital()</code> пересчитывает из БД</li>
+  </ul>
 
-            if (markers && markers.length > 0) {
-                candlestickSeries.setMarkers(markers);
-            }
+  <h3>Лимиты (HH Isolated Balance)</h3>
+  <p>Система изолированного бюджета контролирует все HH ордера. Ограничения проверяются <strong>до</strong> размещения каждого ордера в <code>manage_proactive_orders()</code>:</p>
+  <table>
+    <tr><th>Лимит</th><th>Значение</th><th>Зачем</th></tr>
+    <tr><td><code>total_budget</code></td><td>$20 (настраивается)</td><td>Максимальный $ на все HH ордера. <code>hh_used &ge; total_budget</code> &rarr; стоп</td></tr>
+    <tr><td><code>max_orders_total</code></td><td>6 (настраивается)</td><td>Максимум HH ордеров одновременно по всем токенам</td></tr>
+    <tr><td><code>max_orders_per_token</code></td><td>3 (настраивается)</td><td>Максимум HH ордеров на один токен</td></tr>
+    <tr><td>12h window</td><td>&le; 3 HH / токен / 12ч</td><td>Rate limit: не более 3 новых HH ордеров за скользящие 12 часов</td></tr>
+    <tr><td>Per-token budget</td><td>настраивается</td><td>Индивидуальный бюджет через дашборд. 50% идёт на HH</td></tr>
+    <tr><td>Min order</td><td>$3</td><td>Минимальный размер ордера (лимит Gate.io)</td></tr>
+  </table>
 
-            if (priceLines && priceLines.length > 0) {
-                priceLines.forEach(line => {
-                    candlestickSeries.createPriceLine({
-                        price: line.price,
-                        color: line.filled ? '#f23645' : '#f7931a',
-                        lineWidth: 1,
-                        lineStyle: line.filled ? 0 : 2,
-                        axisLabelVisible: true,
-                        title: line.filled ? '' : '',
-                    });
-                });
-            }
+  <h3>Подсчёт 12ч окна</h3>
+  <div class="callout critical">
+    <strong>Критический механизм.</strong> Считает УНИКАЛЬНЫЕ намерения (intents), не количество позиций.
+  </div>
+  <ol>
+    <li><strong>Pending HH ордера</strong> в окне &rarr; каждый = 1 intent</li>
+    <li><strong>Полностью исполненные</strong> (нет в pending, есть позиции) &rarr; <code>COUNT(DISTINCT entry_order_id)</code> = 1 на ордер</li>
+    <li><strong>Partial fill</strong> с pending: ордер всё ещё в таблице &rarr; считается как 1 (позиции не дублируются)</li>
+  </ol>
+</section>
 
-            chart.timeScale().fitContent();
-            return chart;
-        }
+<hr>
 
-        // Extended ERA data Nov 17-30 for weekly range chart (to show where HIGH formed)
-        const eraWeeklyRangeData = [{"time": 1763337600, "open": 0.2325, "high": 0.2689, "low": 0.225, "close": 0.2595}, {"time": 1763352000, "open": 0.2596, "high": 0.2781, "low": 0.2545, "close": 0.2579}, {"time": 1763366400, "open": 0.258, "high": 0.2755, "low": 0.2564, "close": 0.258}, {"time": 1763380800, "open": 0.2581, "high": 0.2599, "low": 0.2457, "close": 0.2491}, {"time": 1763395200, "open": 0.2491, "high": 0.2496, "low": 0.2359, "close": 0.2435}, {"time": 1763409600, "open": 0.2435, "high": 0.2573, "low": 0.2361, "close": 0.2569}, {"time": 1763424000, "open": 0.257, "high": 0.2602, "low": 0.2349, "close": 0.2464}, {"time": 1763438400, "open": 0.2465, "high": 0.2485, "low": 0.2405, "close": 0.2406}, {"time": 1763452800, "open": 0.2406, "high": 0.2485, "low": 0.2393, "close": 0.2484}, {"time": 1763467200, "open": 0.2483, "high": 0.2637, "low": 0.2441, "close": 0.2497}, {"time": 1763481600, "open": 0.2495, "high": 0.2579, "low": 0.2495, "close": 0.2549}, {"time": 1763496000, "open": 0.2547, "high": 0.2547, "low": 0.2488, "close": 0.2488}, {"time": 1763510400, "open": 0.249, "high": 0.2493, "low": 0.241, "close": 0.2412}, {"time": 1763524800, "open": 0.2412, "high": 0.2425, "low": 0.2343, "close": 0.2401}, {"time": 1763539200, "open": 0.2401, "high": 0.2485, "low": 0.2401, "close": 0.248}, {"time": 1763553600, "open": 0.248, "high": 0.2483, "low": 0.2325, "close": 0.2333}, {"time": 1763568000, "open": 0.2333, "high": 0.2359, "low": 0.2256, "close": 0.228}, {"time": 1763582400, "open": 0.228, "high": 0.2407, "low": 0.2278, "close": 0.2404}, {"time": 1763596800, "open": 0.2403, "high": 0.2422, "low": 0.2376, "close": 0.2417}, {"time": 1763611200, "open": 0.2421, "high": 0.2479, "low": 0.2399, "close": 0.2442}, {"time": 1763625600, "open": 0.2442, "high": 0.2457, "low": 0.2422, "close": 0.2456}, {"time": 1763640000, "open": 0.2458, "high": 0.2545, "low": 0.2446, "close": 0.2446}, {"time": 1763654400, "open": 0.2445, "high": 0.2455, "low": 0.2363, "close": 0.2376}, {"time": 1763668800, "open": 0.2376, "high": 0.2445, "low": 0.2341, "close": 0.2395}, {"time": 1763683200, "open": 0.2395, "high": 0.2562, "low": 0.237, "close": 0.2547}, {"time": 1763697600, "open": 0.2547, "high": 0.2755, "low": 0.2528, "close": 0.2596}, {"time": 1763712000, "open": 0.2594, "high": 0.2658, "low": 0.2479, "close": 0.2499}, {"time": 1763726400, "open": 0.2501, "high": 0.275, "low": 0.2439, "close": 0.2632}, {"time": 1763740800, "open": 0.2634, "high": 0.2746, "low": 0.249, "close": 0.2635}, {"time": 1763755200, "open": 0.2634, "high": 0.2635, "low": 0.2508, "close": 0.2622}, {"time": 1763769600, "open": 0.2621, "high": 0.2962, "low": 0.254, "close": 0.2656}, {"time": 1763784000, "open": 0.2653, "high": 0.2672, "low": 0.2464, "close": 0.2538}, {"time": 1763798400, "open": 0.2539, "high": 0.2575, "low": 0.2455, "close": 0.2528}, {"time": 1763812800, "open": 0.2526, "high": 0.2595, "low": 0.247, "close": 0.2525}, {"time": 1763827200, "open": 0.2524, "high": 0.2732, "low": 0.2524, "close": 0.2722}, {"time": 1763841600, "open": 0.2723, "high": 0.2738, "low": 0.2601, "close": 0.264}, {"time": 1763856000, "open": 0.264, "high": 0.2686, "low": 0.2553, "close": 0.2589}, {"time": 1763870400, "open": 0.2589, "high": 0.262, "low": 0.2518, "close": 0.2526}, {"time": 1763884800, "open": 0.2528, "high": 0.2854, "low": 0.2523, "close": 0.2766}, {"time": 1763899200, "open": 0.2766, "high": 0.2798, "low": 0.2625, "close": 0.2667}, {"time": 1763913600, "open": 0.2666, "high": 0.2703, "low": 0.2627, "close": 0.2652}, {"time": 1763928000, "open": 0.265, "high": 0.273, "low": 0.2627, "close": 0.2666}, {"time": 1763942400, "open": 0.2666, "high": 0.3026, "low": 0.2611, "close": 0.2795}, {"time": 1763956800, "open": 0.2794, "high": 0.2842, "low": 0.2724, "close": 0.2815}, {"time": 1763971200, "open": 0.2816, "high": 0.2819, "low": 0.271, "close": 0.2761}, {"time": 1763985600, "open": 0.2757, "high": 0.2918, "low": 0.2734, "close": 0.2792}, {"time": 1764000000, "open": 0.2793, "high": 0.2844, "low": 0.2746, "close": 0.2778}, {"time": 1764014400, "open": 0.278, "high": 0.2847, "low": 0.2768, "close": 0.2834}, {"time": 1764028800, "open": 0.2833, "high": 0.2891, "low": 0.2657, "close": 0.2725}, {"time": 1764043200, "open": 0.2727, "high": 0.2788, "low": 0.2673, "close": 0.2674}, {"time": 1764057600, "open": 0.2678, "high": 0.2703, "low": 0.2656, "close": 0.2677}, {"time": 1764072000, "open": 0.2679, "high": 0.2746, "low": 0.2661, "close": 0.2703}, {"time": 1764086400, "open": 0.2704, "high": 0.2749, "low": 0.2686, "close": 0.2711}, {"time": 1764100800, "open": 0.2715, "high": 0.2755, "low": 0.2698, "close": 0.2741}, {"time": 1764115200, "open": 0.274, "high": 0.2741, "low": 0.2618, "close": 0.2646}, {"time": 1764129600, "open": 0.2645, "high": 0.2764, "low": 0.2645, "close": 0.2681}, {"time": 1764144000, "open": 0.2683, "high": 0.2686, "low": 0.2592, "close": 0.2631}, {"time": 1764158400, "open": 0.263, "high": 0.2684, "low": 0.26, "close": 0.2618}, {"time": 1764172800, "open": 0.2621, "high": 0.27, "low": 0.262, "close": 0.2687}, {"time": 1764187200, "open": 0.2684, "high": 0.2737, "low": 0.2671, "close": 0.2718}, {"time": 1764201600, "open": 0.2717, "high": 0.2772, "low": 0.2666, "close": 0.2675}, {"time": 1764216000, "open": 0.2674, "high": 0.2715, "low": 0.2673, "close": 0.2688}, {"time": 1764230400, "open": 0.2686, "high": 0.2726, "low": 0.2669, "close": 0.2689}, {"time": 1764244800, "open": 0.2689, "high": 0.2702, "low": 0.2647, "close": 0.2698}, {"time": 1764259200, "open": 0.2697, "high": 0.2795, "low": 0.2694, "close": 0.2779}, {"time": 1764273600, "open": 0.2778, "high": 0.2807, "low": 0.2731, "close": 0.2744}, {"time": 1764288000, "open": 0.2744, "high": 0.2846, "low": 0.2741, "close": 0.2759}, {"time": 1764302400, "open": 0.2757, "high": 0.2861, "low": 0.2741, "close": 0.2747}, {"time": 1764316800, "open": 0.2744, "high": 0.2764, "low": 0.2704, "close": 0.2724}, {"time": 1764331200, "open": 0.2724, "high": 0.283, "low": 0.2718, "close": 0.2825}, {"time": 1764345600, "open": 0.2825, "high": 0.2852, "low": 0.2735, "close": 0.2818}, {"time": 1764360000, "open": 0.2821, "high": 0.2865, "low": 0.2784, "close": 0.2833}, {"time": 1764374400, "open": 0.2832, "high": 0.2852, "low": 0.2767, "close": 0.2794}, {"time": 1764388800, "open": 0.2793, "high": 0.2795, "low": 0.2612, "close": 0.262}, {"time": 1764403200, "open": 0.2619, "high": 0.2778, "low": 0.2615, "close": 0.2664}, {"time": 1764417600, "open": 0.2664, "high": 0.2672, "low": 0.2615, "close": 0.2628}, {"time": 1764432000, "open": 0.2626, "high": 0.2627, "low": 0.2575, "close": 0.2596}, {"time": 1764446400, "open": 0.2594, "high": 0.2631, "low": 0.2589, "close": 0.2602}, {"time": 1764460800, "open": 0.2601, "high": 0.2614, "low": 0.249, "close": 0.2509}, {"time": 1764475200, "open": 0.251, "high": 0.2519, "low": 0.2387, "close": 0.2438}, {"time": 1764489600, "open": 0.2438, "high": 0.2477, "low": 0.2426, "close": 0.2428}, {"time": 1764504000, "open": 0.2428, "high": 0.2493, "low": 0.242, "close": 0.2453}, {"time": 1764518400, "open": 0.2453, "high": 0.2594, "low": 0.2448, "close": 0.2546}, {"time": 1764532800, "open": 0.254, "high": 0.2557, "low": 0.2487, "close": 0.2497}];
+<!-- ==================== 7. CRASH RECOVERY ==================== -->
+<section id="recovery">
+  <h2>7. Crash Recovery</h2>
+  <p>При запуске <code>_sync_with_exchange()</code> проверяет согласованность state с биржей:</p>
 
-        // Initialize charts
-        createWeeklyRangeChart('chart-weekly-range', eraWeeklyRangeData);
-        createChart('chart-era-nov', eraNovData, eraNovMarkers, null);
-        createChart('chart-era-jan', eraJanData, null, eraGlobalPumpOrders);
-        createChart('chart-banana-nov', bananaNovData, null, bananaGlobalPumpOrders);
-    </script>
+  <h3>Orphaned ордера <em>(на бирже, но не в state)</em></h3>
+  <ul>
+    <li>Восстанавливаются в pending orders</li>
+    <li>Тип: из БД или по эвристике (sell &gt;15% выше цены &rarr; GP, иначе HH)</li>
+  </ul>
 
+  <h3>Stale ордера <em>(в state, но не на бирже)</em></h3>
+  <ul>
+    <li>Удаляются из state</li>
+  </ul>
+
+  <h3>Exit-ы, исполненные пока бот был выключен</h3>
+  <p>Для каждой OPEN/CLOSING позиции с <code>exit_order_id</code>:</p>
+  <table>
+    <tr><th>Статус на бирже</th><th>Действие</th></tr>
+    <tr><td><code>closed</code></td><td>Позиция закрывается, капитал освобождается</td></tr>
+    <tr><td><code>canceled</code></td><td><code>exit_order_id</code> очищается, ExitManager поставит новый</td></tr>
+    <tr><td><code>open</code></td><td>Ничего не делаем</td></tr>
+  </table>
+
+  <h3>GP state</h3>
+  <ul>
+    <li>GP ордера на бирже без GP state &rarr; state восстанавливается</li>
+    <li><code>applied_*</code> поля = 0 &rarr; заполняются из настроек токена</li>
+  </ul>
+</section>
+
+<hr>
+
+<!-- ==================== 8. STORAGE ==================== -->
+<section id="storage">
+  <h2>8. Хранение данных</h2>
+
+  <div class="grid-2">
+    <div class="card">
+      <h4>SQLite (WAL mode)</h4>
+      <table>
+        <tr><th>Таблица</th><th>Данные</th></tr>
+        <tr><td><code>positions</code></td><td>Все позиции</td></tr>
+        <tr><td><code>orders</code></td><td>Pending ордера</td></tr>
+        <tr><td><code>trade_history</code></td><td>Архив с PnL</td></tr>
+        <tr><td><code>gp_state</code></td><td>GP сетка</td></tr>
+      </table>
+      <ul style="margin-top:10px">
+        <li>Parameterized queries</li>
+        <li>Column allowlist для UPDATE</li>
+        <li>Thread-safe через <code>_db_lock</code></li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>JSON (bot_state.json)</h4>
+      <ul>
+        <li>Настройки токенов</li>
+        <li>Proactive order state</li>
+        <li>Капитал (hh_used, gp_used)</li>
+        <li>Pending cancellations</li>
+      </ul>
+      <p style="margin-top:10px"><em>Atomic write: .tmp файл &rarr; rename</em></p>
+    </div>
+  </div>
+
+  <h3>Миграция</h3>
+  <p>При первом запуске: если <code>bot_state.json</code> содержит позиции/ордера, они мигрируются в SQLite в одной транзакции.</p>
+</section>
+
+<hr>
+
+<!-- ==================== 9. PROTECTION ==================== -->
+<section id="protection">
+  <h2>9. Защитные механизмы</h2>
+  <table>
+    <tr><th>Механизм</th><th>Описание</th></tr>
+    <tr><td>Flash crash detection</td><td>Падение &gt;30% за 12ч &rarr; пропуск цикла</td></tr>
+    <tr><td>Stale order cleanup</td><td>HH ордер &gt;10% от цены &rarr; отмена</td></tr>
+    <tr><td>Double-close guard</td><td>Перечитать позицию из БД перед закрытием</td></tr>
+    <tr><td>Rate limit</td><td>0.5с между API вызовами (ордера)</td></tr>
+    <tr><td>HH Isolated Balance</td><td>Бюджет ($20), макс. ордеров (6 total, 3 per token) &mdash; контролирует все HH ордера</td></tr>
+    <tr><td>12h window</td><td>Максимум 3 новых HH на токен за 12ч</td></tr>
+    <tr><td>Capital floor</td><td><code>hh_used</code> не уходит ниже 0</td></tr>
+    <tr><td>Periodic re-sync</td><td>Каждые 30 циклов (~5 мин) полная синхронизация</td></tr>
+    <tr><td>Anomaly detection</td><td>Каждые 10 циклов проверка orphaned/stale</td></tr>
+    <tr><td>Exponential backoff</td><td>При ошибках: 5с &rarr; 10с &rarr; 20с &rarr; ... &rarr; 60с</td></tr>
+  </table>
+
+  <h3>Авто-обнаружение токенов</h3>
+  <p>Бот не требует ручной настройки списка токенов. Он сканирует спотовый баланс:</p>
+  <ol>
+    <li><code>fetch_balance()</code> &rarr; все токены</li>
+    <li>Фильтр: не стейблкоин, баланс &gt; 0, стоимость &ge; $1</li>
+    <li>Для каждого найденного токена: торговать</li>
+  </ol>
+</section>
+
+<hr>
+
+<!-- ==================== 10. CONFIG ==================== -->
+<section id="config">
+  <h2>10. Настройки (config.json)</h2>
+<pre><code>{
+  "pump_detection":  { "min_percent": 5, "lookback_hours": 12 },
+  "hh_levels":       { "lookback_candles": 1080, "proximity_percent": 10, "max_levels": 3 },
+  "weekly_range":    { "lookback_days": 8, "zone_min_percent": 50 },
+  "exit":            { "retrace_percent": 60 },
+  "global_pump":     { "grid_start_percent": 20, "grid_end_percent": 50,
+                       "num_orders": 10, "budget": 40 },
+  "capital":         { "proactive_budget": 10, "max_capital": 50 },
+  "protection":      { "flash_crash_percent": 30, "pause_hours": 12 }
+}</code></pre>
+  <p>Дополнительно: per-token настройки через дашборд (бюджет, GP on/off, GP диапазон).</p>
+</section>
+
+<hr>
+
+<!-- ==================== 11. DASHBOARD ==================== -->
+<section id="dashboard">
+  <h2>11. Дашборд</h2>
+  <p>Веб-интерфейс на <strong>Flask</strong> (<code>dashboard_server.py</code>, порт 5001). Позволяет мониторить бота в реальном времени и управлять всеми параметрами без перезапуска.</p>
+
+  <h3>Управление ботом</h3>
+  <div class="grid-2">
+    <div class="card">
+      <h4>Start / Stop</h4>
+      <ul>
+        <li><strong>Start</strong> &mdash; запускает SupervisorAgent в фоновом потоке</li>
+        <li><strong>Stop</strong> &mdash; останавливает бота + <strong>отменяет ВСЕ ордера</strong> на бирже + сбрасывает капитал</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h4>Статус</h4>
+      <ul>
+        <li>Open positions / Pending orders</li>
+        <li>HH / GP капитал использован</li>
+        <li>Состояние бота (running / stopped)</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Per-Token настройки</h3>
+  <p>Каждый токен настраивается отдельно через <code>POST /api/settings/&lt;symbol&gt;</code>. При изменении настроек старые ордера отменяются и размещаются новые с обновлёнными параметрами.</p>
+
+  <table>
+    <tr><th>Параметр</th><th>По умолчанию</th><th>Описание</th></tr>
+    <tr><td><code>budget</code></td><td>$10</td><td>Бюджет токена на HH стратегию. 50% идёт на текущую ситуацию, делится между видимыми HH уровнями</td></tr>
+    <tr><td><code>range_days</code></td><td>8</td><td>Дней для расчёта недельного диапазона (low/high). Влияет на зону валидных HH</td></tr>
+    <tr><td><code>zone_percent</code></td><td>50</td><td>Минимальная зона HH в недельном диапазоне. 50 = только верхняя половина</td></tr>
+    <tr><td><code>retrace_percent</code></td><td>60</td><td>% ретрейса для расчёта exit level</td></tr>
+    <tr><td><code>hh_proximity_percent</code></td><td>10</td><td>Макс. расстояние от текущей цены до HH уровня</td></tr>
+  </table>
+
+  <h3>GP настройки (per-token)</h3>
+  <table>
+    <tr><th>Параметр</th><th>По умолчанию</th><th>Описание</th></tr>
+    <tr><td><code>gp_enabled</code></td><td>false</td><td>Вкл/выкл GP сетку для этого токена</td></tr>
+    <tr><td><code>gp_start_percent</code></td><td>20</td><td>Начало сетки: base_price + X%. Чем меньше &mdash; тем ближе к текущей цене первый ордер</td></tr>
+    <tr><td><code>gp_end_percent</code></td><td>50</td><td>Конец сетки: base_price + X%. Чем больше &mdash; тем выше последний ордер</td></tr>
+    <tr><td><code>gp_budget</code></td><td>$40</td><td>Суммарный бюджет на GP сетку. Распределяется экспоненциально (больше на верхние уровни)</td></tr>
+  </table>
+
+  <div class="callout warn">
+    <strong>При изменении GP настроек:</strong> сетка пересобирается с СОХРАНЁННЫМ base_price. Цена не перезапрашивается &mdash; это защита от случайного сброса сетки при корректировке параметров.
+  </div>
+
+  <h3>HH Isolated Balance (глобально)</h3>
+  <p>Настройки изолированного бюджета для HH стратегии через <code>POST /api/hh/limits</code>:</p>
+  <table>
+    <tr><th>Параметр</th><th>По умолчанию</th><th>Описание</th></tr>
+    <tr><td><code>total_budget</code></td><td>$20</td><td>Максимальный суммарный бюджет на все HH ордера</td></tr>
+    <tr><td><code>max_orders_total</code></td><td>6</td><td>Макс. количество HH ордеров одновременно (все токены)</td></tr>
+    <tr><td><code>max_orders_per_token</code></td><td>3</td><td>Макс. количество HH ордеров на один токен</td></tr>
+  </table>
+
+  <h3>Ручные действия</h3>
+  <table>
+    <tr><th>Действие</th><th>Endpoint</th><th>Что делает</th></tr>
+    <tr><td>Отменить ордер</td><td><code>POST /api/orders/&lt;id&gt;/cancel</code></td><td>Отменяет на бирже, освобождает капитал. Бот может переставить на следующем цикле</td></tr>
+    <tr><td>Отменить позицию</td><td><code>POST /api/positions/&lt;id&gt;/cancel</code></td><td>Отменяет exit ордер, закрывает позицию (exit_price=0, т.е. ручная отмена)</td></tr>
+  </table>
+
+  <h3>Мониторинг</h3>
+  <table>
+    <tr><th>Endpoint</th><th>Данные</th></tr>
+    <tr><td><code>GET /api/spot-balances</code></td><td>Балансы всех токенов на споте + USDT</td></tr>
+    <tr><td><code>GET /api/ohlcv/&lt;symbol&gt;</code></td><td>OHLCV свечи для графика (Lightweight Charts)</td></tr>
+    <tr><td><code>GET /api/hh-levels/&lt;symbol&gt;</code></td><td>HH уровни + недельный диапазон + зона 50%</td></tr>
+    <tr><td><code>GET /api/positions/&lt;symbol&gt;</code></td><td>Открытые позиции, pending ордера, proactive state, GP state</td></tr>
+    <tr><td><code>GET /api/ticker/&lt;symbol&gt;</code></td><td>Текущая цена, bid, ask, 24h change</td></tr>
+    <tr><td><code>GET /api/bot/status</code></td><td>Статус бота, капитал, HH status</td></tr>
+    <tr><td><code>GET /api/hh/status</code></td><td>Детальный HH isolated balance</td></tr>
+  </table>
+
+  <div class="callout">
+    <strong>Cross-process safety:</strong> дашборд и бот пишут в один <code>bot_state.json</code>. При сохранении настроек дашборд сначала перечитывает файл с диска, чтобы не затереть изменения бота.
+  </div>
+</section>
+
+<hr>
+
+<!-- ==================== 12. TELEGRAM ==================== -->
+<section id="telegram">
+  <h2>12. Telegram</h2>
+  <p>Двусторонняя интеграция: бот отправляет <strong>нотификации</strong> о событиях и принимает <strong>команды</strong> для мониторинга.</p>
+
+  <h3>Архитектура нотификаций</h3>
+  <p>Работает через <strong>EventBus</strong> (pub/sub). Supervisor публикует события &rarr; <code>QAAgent</code> (<code>qa_agent.py</code>) подписывается и фильтрует &mdash; не все события уходят в Telegram, чтобы избежать спама.</p>
+
+  <table>
+    <tr><th>Событие</th><th>Telegram?</th><th>Описание</th></tr>
+    <tr><td><code>ORDER_FILLED</code></td><td>Да</td><td>Ордер исполнен (entry). Показывает цену, размер, тип (HH/GP)</td></tr>
+    <tr><td><code>ORDER_PARTIAL_FILL</code></td><td>Да</td><td>Частичное исполнение ордера</td></tr>
+    <tr><td><code>POSITION_CLOSED</code></td><td>Да</td><td>Позиция закрыта. Показывает PnL</td></tr>
+    <tr><td><code>FLASH_CRASH_DETECTED</code></td><td>Да</td><td>Обнаружен flash crash (&gt;30% за 12ч)</td></tr>
+    <tr><td><code>ERROR_OCCURRED</code></td><td>Только CRITICAL</td><td>Ошибки бота. Только критические (crash, потеря соединения)</td></tr>
+    <tr><td><code>GP_DAILY_UPDATE</code></td><td>Да</td><td>Ежедневная пересборка GP сетки (сводка)</td></tr>
+    <tr><td><code>SUPERVISOR_STARTED/STOPPED</code></td><td>Да</td><td>Запуск/остановка бота</td></tr>
+    <tr><td><code>POSITION_OPENED</code></td><td>Нет</td><td>Дубликат ORDER_FILLED, подавляется</td></tr>
+    <tr><td><code>EXIT_MODE_CHANGED</code></td><td>Нет</td><td>Внутренний переход (retrace_60 &rarr; profit_1pct)</td></tr>
+    <tr><td><code>HIGH_UPDATED</code></td><td>Нет</td><td>Рутинное обновление max_high</td></tr>
+  </table>
+
+  <h3>Telegram команды</h3>
+  <p><code>TelegramCommands</code> (<code>telegram_commands.py</code>) слушает команды через long polling и отвечает inline-кнопками:</p>
+  <table>
+    <tr><th>Команда</th><th>Что делает</th></tr>
+    <tr><td><code>/status</code></td><td>Статус бота: running/stopped, кол-во ордеров, позиций, HH бюджет, список токенов</td></tr>
+    <tr><td><code>/orders</code></td><td>Все pending ордера, сгруппированные по токену (тип, цена, размер)</td></tr>
+    <tr><td><code>/positions</code></td><td>Открытые позиции с PnL расчётом и exit target</td></tr>
+    <tr><td><code>/chart</code></td><td>HH уровни, недельный диапазон, GP mode для каждого токена</td></tr>
+    <tr><td><code>/menu</code></td><td>Inline-кнопки: Status, Orders, Positions, Chart, Refresh</td></tr>
+  </table>
+
+  <h3>Конфигурация</h3>
+  <p>Через переменные окружения (<code>.env</code>):</p>
+  <ul>
+    <li><code>TELEGRAM_BOT_TOKEN</code> &mdash; токен бота от @BotFather</li>
+    <li><code>TELEGRAM_CHAT_ID</code> &mdash; ID чата для нотификаций</li>
+  </ul>
+  <p>Listener запускается автоматически watchdog-ом в фоновом потоке (<code>run_in_background()</code>).</p>
+</section>
+
+<hr>
+
+<!-- ==================== 13. TESTS ==================== -->
+<section id="tests">
+  <h2>13. Тестирование</h2>
+  <div class="callout" style="border-left-color: var(--accent2); background: rgba(63,185,80,0.06);">
+    <strong style="color: var(--accent2);">Все 28 тестов пройдены успешно.</strong> Покрытие: критические пути торговой логики, подсчёт ордеров, жизненный цикл позиций, капитал, PnL, fill detection, crash recovery.
+  </div>
+  <p><strong>28 юнит-тестов</strong> покрывают критические пути:</p>
+  <table>
+    <tr><th>Модуль</th><th>Тестов</th><th>Что покрыто</th></tr>
+    <tr><td><code>test_models</code></td><td>4</td><td>PnL расчёт (positive, negative, zero), OrderType enum</td></tr>
+    <tr><td><code>test_database</code></td><td>10</td><td>CRUD позиций/ордеров, 12ч окно (5 сценариев дедупликации)</td></tr>
+    <tr><td><code>test_state_manager</code></td><td>5</td><td>HH капитал (add, release, floor, sync), настройки токенов</td></tr>
+    <tr><td><code>test_supervisor</code></td><td>5</td><td>EXIT skip, HH fill &rarr; position, crash recovery (3 сценария)</td></tr>
+    <tr><td><code>test_exit_manager</code></td><td>4</td><td>Exit fill &rarr; close, double-close guard, order placement</td></tr>
+  </table>
+  <p>Запуск:</p>
+<pre><code>cd "C:\Users\Admin\Desktop\HH mod+global"
+python -m pytest tests/ -v</code></pre>
+</section>
+
+</div>
 </body>
 </html>
